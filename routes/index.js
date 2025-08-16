@@ -1,9 +1,11 @@
-var express = require('express');
-var router = express.Router();
+var express = require('express')
+var {getQuejasPaginadas , getEntidades, getQuejasPaginadasForEntity, loadEntidades} = require('../services/quejas.service')
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
 
-module.exports = router;
+const router = express.Router()
+
+router.get('/', async (req, res) => {
+
+})
+
+module.exports = router
