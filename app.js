@@ -6,7 +6,6 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var registrarRouter = require('./routes/quejas');
 var quejasRouter = require('./routes/quejas');
 
 var { loadEntidades } = require('./services/quejas.service');
@@ -27,7 +26,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Rutas API
 app.use('/api/quejas', quejasRouter);
 app.use('/users', usersRouter);
-app.use('/', quejasRouter); // quejasRouter antes que indexRouter
 app.use('/', indexRouter);
 
 // Cargar entidades al iniciar la app
