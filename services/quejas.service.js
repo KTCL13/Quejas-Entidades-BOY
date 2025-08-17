@@ -16,6 +16,7 @@ export const getQuejasPaginadasForEntity = async (entidadId, page = 1, limit = 1
 
     const [{ count }] = await sql`
       SELECT COUNT(*)::int AS count FROM quejas
+      WHERE id_entidad = ${entidadId}
     `
 
     return {
