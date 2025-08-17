@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createQueja } = require('../services/quejas.service');
+const { createQueja, getQuejasPaginadasForEntity } = require('../services/quejas.service');
 
 // POST /api/quejas
 router.post('/', async (req, res) => {
@@ -17,6 +17,23 @@ router.post('/', async (req, res) => {
 
     const queja = await createQueja({ texto, id_entidad });
     res.status(201).json({ message: "Queja registrada", data: queja });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/', async (req, res) => {
+  try {
+    const entidadId = req.query.entidadId;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    if (!entidadId) {
+      return res.status(400).json({ error: 'Debe seleccionar una entidad.' });
+    }
+
+    const result = await getQuejasPaginadasForEntity(entidadId, page, limit);
+    res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
