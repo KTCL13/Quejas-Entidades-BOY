@@ -26,11 +26,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Rutas API
 app.use('/api/quejas', quejasRouter);
-
-// Rutas de la app
-app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/', quejasRouter);
+app.use('/', quejasRouter); // quejasRouter antes que indexRouter
+app.use('/', indexRouter);
 
 // Cargar entidades al iniciar la app
 loadEntidades().catch(err => console.error('Error cargando entidades:', err));
