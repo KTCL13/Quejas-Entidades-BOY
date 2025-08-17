@@ -1,8 +1,21 @@
 const express = require('express');
 const router = express.Router();
+
+const { getEntidadesCache } = require('../models/cache');
 const { createQueja, getQuejasPaginadasForEntity } = require('../services/quejas.service');
 
-// POST /api/quejas
+// GET /registrar → renderiza el formulario con entidades
+router.get('/registrar', async (req, res) => {
+  try {
+    const entidades = getEntidadesCache() || [];
+    console.log('Entidades en cache (registrar):', entidades);
+    res.render('registrar', { entidades });
+  } catch (err) {
+    res.render('registrar', { entidades: [] });
+  }
+});
+
+// POST /api/quejas → crea una nueva queja
 router.post('/', async (req, res) => {
   try {
     const { texto, id_entidad } = req.body;
@@ -22,6 +35,7 @@ router.post('/', async (req, res) => {
   }
 });
 
+// GET /api/quejas → lista paginada por entidad
 router.get('/', async (req, res) => {
   try {
     const entidadId = req.query.entidadId;

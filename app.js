@@ -6,26 +6,36 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var {loadEntidades } = require('./services/quejas.service');
+var registrarRouter = require('./routes/quejas');
+var quejasRouter = require('./routes/quejas');
+
+var { loadEntidades } = require('./services/quejas.service');
+
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+// Middlewares generales
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/api/quejas', require('./routes/quejas'));
 
+// Rutas API
+app.use('/api/quejas', quejasRouter);
+
+// Rutas de la app
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/', quejasRouter);
 
-loadEntidades();
+// Cargar entidades al iniciar la app
+loadEntidades().catch(err => console.error('Error cargando entidades:', err));
 
-// catch 404 and forward to  error handler
+// catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });

@@ -40,6 +40,20 @@ export const loadEntidades = async () => {
   setEntidadesCache(entidades)
 }
 
+// Devuelve todas las entidades (para el formulario de registrar quejas)
+export const getEntidades = async () => {
+  try {
+    const entidades = await sql`
+      SELECT * FROM entidades
+      ORDER BY id_entidad
+    `
+    return entidades
+  } catch (error) {
+    console.error(error)
+    throw new Error('Error al obtener las entidades')
+  }
+}
+
 //Parte relacionada a registrar quejas
 export const createQueja = async ({ texto, id_entidad }) => {
   if (!texto || texto.trim().length < 10 || texto.trim().length > 2000) {
@@ -56,8 +70,8 @@ export const createQueja = async ({ texto, id_entidad }) => {
 
   // se insertan quejas
   const [nuevaQueja] = await sql`
-    INSERT INTO quejas (texto_queja, id_entidad, fecha_creacion)
-    VALUES (${texto.trim()}, ${id_entidad}, NOW())
+    INSERT INTO quejas (descripcion_queja, id_entidad)
+    VALUES (${texto.trim()}, ${id_entidad})
     RETURNING *
   `
 

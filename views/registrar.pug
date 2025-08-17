@@ -1,0 +1,60 @@
+extends layout
+
+block content
+  h1 Registrar Queja
+
+  form(action='/api/quejas', method='POST', id='formQueja', style='max-width:600px;margin:auto;')
+    div(style='margin-bottom:20px;')
+      label(for='id_entidad', style='display:block;margin-bottom:5px;') Entidad Pública
+      select(name='id_entidad', id='id_entidad', required, style='width:100%;padding:8px;')
+        option(value='') Seleccione una entidad...
+        each entidad in entidades
+          option(value=entidad.id_entidad)= entidad.nombre_entidad
+
+    div(style='margin-bottom:20px;')
+      label(for='texto', style='display:block;margin-bottom:5px;') Queja
+      textarea(name='texto', id='texto', rows='6', required, placeholder='Escriba su queja aquí. (10-2000 caracteres)', style='width:100%;padding:8px;resize:vertical;')
+
+    button(type='submit', id='btnEnviar', style='padding:8px 16px;', color: green, background: white, border:2px) Enviar queja
+
+  div#mensaje(style='margin-top:15px;color:red;text-align:center;')
+
+  script.
+    const form = document.getElementById('formQueja');
+    const entidadSelect = document.getElementById('id_entidad');
+    const mensajeDiv = document.getElementById('mensaje');
+    const btnEnviar = document.getElementById('btnEnviar');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id_entidad_val = entidadSelect.value;
+      const texto = document.getElementById('texto').value;
+
+      if (!id_entidad_val) {
+        mensajeDiv.style.color = 'red';
+        mensajeDiv.textContent = 'Debe seleccionar una entidad.';
+        return;
+      }
+
+      const id_entidad = Number(id_entidad_val);
+
+      try {
+        const res = await fetch('/api/quejas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id_entidad, texto })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          mensajeDiv.style.color = 'red';
+          mensajeDiv.textContent = data.error;
+        } else {
+          mensajeDiv.style.color = 'green';
+          mensajeDiv.textContent = data.message;
+          form.reset();
+        }
+      } catch (err) {
+        mensajeDiv.textContent = 'Error de servidor: ' + err.message;
+      }
+    });
