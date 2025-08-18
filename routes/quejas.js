@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { pool } = require('../models/db');
 
 const { getEntidadesCache } = require('../models/cache');
 const { createQueja, getQuejasPaginadasForEntity } = require('../services/quejas.service');

@@ -1,0 +1,128 @@
+/* Reset ligero */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: #fff;
+  color: #111;
+}
+
+/* Cabecera similar a la imagen */
+.site-header {
+  border: 4px solid #0073c6; /* borde azul */
+  border-radius: 8px;
+  margin: 12px;
+  background: #ffffff;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+}
+.brand {
+  font-weight: 700;
+  font-size: 22px;
+  color: #0a0a0a;
+}
+.main-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 18px;
+}
+.main-nav a {
+  text-decoration: none;
+  color: #222;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+.main-nav a:hover { background: rgba(0,0,0,0.04); }
+.main-nav a.active {
+  background: #0073c6;
+  color: #fff;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.05);
+}
+
+/* Contenido */
+.page-content { padding: 24px; }
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+/* Título */
+.title {
+  margin: 8px 0 20px 0;
+  font-size: 20px;
+  color: #111;
+}
+
+/* Estilos generales para la tabla de reportes */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+.table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Tabla centrada y estilo */
+.table-wrap {
+  background: transparent;
+  padding: 12px;
+}
+.report-table {
+  width: 60%;
+  min-width: 420px;
+  margin: 0 auto;
+  border-collapse: collapse;
+  border: 1px solid #dcdcdc;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+}
+.report-table thead th {
+  background: #e9e9e9;
+  text-align: left;
+  padding: 12px 14px;
+  font-weight: 700;
+  color: #333;
+  border-bottom: 1px solid #d0d0d0;
+}
+.report-table tbody td {
+  padding: 14px;
+  border-top: 1px solid #eee;
+  vertical-align: middle;
+  color: #333;
+}
+.report-table tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+
+/* Celda cuando no hay datos: guión centrado */
+.report-table tbody td:empty::before {
+  content: "-";
+  color: #999;
+  display: inline-block;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 800px) {
+  .report-table { width: 100%; min-width: 0; }
+  .main-nav ul { gap: 10px; }
+  .brand { font-size: 18px; }
+}

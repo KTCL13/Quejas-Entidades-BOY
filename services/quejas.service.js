@@ -1,80 +1,110 @@
-import sql from '../models/db.js';
-import { setEntidadesCache } from '../models/cache.js';
+// Cargar .env antes de cualquier otro módulo que use las variables
+require('dotenv').config();
 
-export const getQuejasPaginadasForEntity = async (entidadId, page = 1, limit = 10) => {
+const { pool } = require('../models/db');
+
+// Cargar todas las entidades
+const loadEntidades = async () => {
   try {
-    const offset = (page - 1) * limit
-
-    const quejas = await sql`
-      SELECT q.*, e.nombre_entidad
-      FROM quejas q
-      JOIN entidades e ON q.id_entidad = e.id_entidad
-      WHERE q.id_entidad = ${entidadId}
-      ORDER BY q.id_queja
-      LIMIT ${limit} OFFSET ${offset}
-    `
-
-    const [{ count }] = await sql`
-      SELECT COUNT(*)::int AS count FROM quejas
-      WHERE id_entidad = ${entidadId}
-    `
-
-    return {
-      data: quejas,
-      page,
-      limit,
-      total: count,
-      totalPages: Math.ceil(count / limit)
-    }
-  } catch (error) {
-    console.error(error)
-    throw new Error('Error al obtener las quejas')
+    const res = await pool.query('SELECT * FROM entidades ORDER BY id');
+    return res.rows;
+  } catch (err) {
+    console.error('Error cargando entidades:', err);
+    throw err;
   }
-}
+};
 
+// Obtener quejas paginadas por entidad
+const getQuejasPaginadasForEntity = async (entidadId, page = 1, limit = 10) => {
+  // validaciones básicas de tipos
+  const id = Number(entidadId);
+  const p = Math.max(1, parseInt(page, 10) || 1);
+  const l = Math.max(1, parseInt(limit, 10) || 10);
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error('ID de entidad inválido');
+  }
 
-export const loadEntidades = async () => {
-  const entidades = await sql`
-    SELECT * FROM entidades
-    ORDER BY id_entidad
-  `
-  setEntidadesCache(entidades)
-}
-
-// Devuelve todas las entidades (para el formulario de registrar quejas)
-export const getEntidades = async () => {
+  const offset = (p - 1) * l;
   try {
-    const entidades = await sql`
-      SELECT * FROM entidades
-      ORDER BY id_entidad
-    `
-    return entidades
-  } catch (error) {
-    console.error(error)
-    throw new Error('Error al obtener las entidades')
+    const res = await pool.query(
+      `SELECT * 
+       FROM quejas 
+       WHERE entidad_id = $1 
+       ORDER BY id DESC 
+       LIMIT $2 OFFSET $3`,
+      [id, l, offset]
+    );
+    return res.rows;
+  } catch (err) {
+    console.error('Error obteniendo quejas paginadas:', err);
+    throw err;
   }
-}
+};
 
-//Parte relacionada a registrar quejas
-export const createQueja = async ({ texto, id_entidad }) => {
+// Reporte: número de quejas por entidad
+const getReporteQuejasPorEntidad = async () => {
+  try {
+    const res = await pool.query(`
+      SELECT e.id AS entidad_id, e.nombre_entidad, COUNT(q.id) AS total_quejas
+      FROM entidades e
+      LEFT JOIN quejas q ON e.id = q.entidad_id
+      GROUP BY e.id, e.nombre_entidad
+      ORDER BY total_quejas DESC
+    `);
+    return res.rows;
+  } catch (err) {
+    console.error('Error generando reporte de quejas por entidad:', err);
+    throw err;
+  }
+};
+
+// Registrar nueva queja
+const createQueja = async ({ texto, entidad_id }) => {
   if (!texto || texto.trim().length < 10 || texto.trim().length > 2000) {
-    throw new Error('La queja debe tener entre 10 y 2000 caracteres')
+    throw new Error('La queja debe tener entre 10 y 2000 caracteres');
+  }
+
+  const eid = Number(entidad_id);
+  if (!Number.isInteger(eid) || eid <= 0) {
+    throw new Error('La entidad especificada no es válida');
   }
 
   // validar si la entidad existe
-  const [entidad] = await sql`
-    SELECT id_entidad FROM entidades WHERE id_entidad = ${id_entidad}
-  `
-  if (!entidad) {
-    throw new Error('La entidad especificada no existe')
+  const entidad = await pool.query(
+    'SELECT id FROM entidades WHERE id = $1',
+    [eid]
+  );
+
+  if (entidad.rows.length === 0) {
+    throw new Error('La entidad especificada no existe');
   }
 
-  // se insertan quejas
-  const [nuevaQueja] = await sql`
-    INSERT INTO quejas (descripcion_queja, id_entidad)
-    VALUES (${texto.trim()}, ${id_entidad})
-    RETURNING *
-  `
+  // insertar queja
+  const result = await pool.query(
+    `INSERT INTO quejas (descripcion_queja, entidad_id, fecha)
+     VALUES ($1, $2, NOW())
+     RETURNING *`,
+    [texto.trim(), eid]
+  );
 
-  return nuevaQueja
-}
+  return result.rows[0];
+};
+
+// Nueva función: probar conexión a la DB
+const testDbConnection = async () => {
+  try {
+    const res = await pool.query('SELECT 1 AS ok');
+    return res.rows && res.rows[0] && res.rows[0].ok === 1;
+  } catch (err) {
+    console.error('Fallo prueba de conexión a DB:', err.message || err);
+    throw err;
+  }
+};
+
+module.exports = {
+  loadEntidades,
+  getQuejasPaginadasForEntity,
+  getReporteQuejasPorEntidad,
+  createQueja,
+  testDbConnection
+};

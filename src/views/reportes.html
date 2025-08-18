@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Reporte de Quejas por Entidad</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">Quejas Entidades Públicas Boyacá</div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="/listado.html">Listado de quejas</a></li>
+          <li><a href="/registrar.html">Registrar Queja</a></li>
+          <li><a class="active" href="/reportes.html">Número de quejas por entidad</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-content">
+    <div class="container">
+      <h2 class="title">Número de quejas por entidad</h2>
+
+      <div class="table-wrap">
+        <table id="tablaReporte" class="report-table">
+          <thead>
+            <tr>
+              <th>Entidad</th>
+              <th>número de quejas</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Los datos se cargarán dinámicamente -->
+            <!-- inicialmente se muestran filas vacías con guión si no hay datos -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/reportes.js"></script>
+</body>
+</html>
