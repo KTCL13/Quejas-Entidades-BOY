@@ -15,11 +15,11 @@ html
         #navbarNav.collapse.navbar-collapse
           ul.navbar-nav.ms-auto
             li.nav-item
-              a.nav-link.active(href="/") Listado de quejas
+              a.nav-link(class=(activePage === 'lista' ? 'active fw-bold text-dark' : ''))(href='/') Lista de Quejas
             li.nav-item
-              a.nav-link(href="api/quejas/registrar") Registrar Queja
+              a.nav-link(class=(activePage === 'registrar' ? 'active fw-bold text-dark' : ''))(href='/api/quejas/registrar') Registrar Queja
             li.nav-item
-              a.nav-link(href="/reporte") Número de quejas por entidad
+              a.nav-link(class=(activePage === 'reportes' ? 'active fw-bold text-dark' : ''))(href='/api/reportes') Número de quejas por entidad
 
     // Contenido principal
     .container.mt-4

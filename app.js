@@ -6,14 +6,14 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 var quejasRouter = require('./routes/quejas');
 var reportesRouter = require('./routes/reportes');
+const { loadEntidades } = require('./services/quejas.service');
 
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'src/views'));
+app.set('views', path.join(__dirname, './views'));
 app.set('view engine', 'pug');
 
 // Middlewares generales
@@ -29,8 +29,9 @@ app.use(express.static(path.join(__dirname, 'src/views')));
 // Rutas API
 app.use('/api/quejas', quejasRouter);
 app.use('/api/reportes', reportesRouter);
-app.use('/users', usersRouter);
 app.use('/', indexRouter);
+
+loadEntidades();
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

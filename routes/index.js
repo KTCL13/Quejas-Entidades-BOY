@@ -1,22 +1,20 @@
-const express = require('express');
-const router = express.Router();
-const quejasService = require('../services/quejas.service');
+var express = require('express')
 
-// GET /
-router.get('/', async (req, res, next) => {
-  try {
-    // Si prefieres renderizar una vista PUG, crea src/views/lista-quejas.pug
-    // Por ahora devolvemos JSON simple para evitar 500 por vista faltante
-    res.json({
-      message: 'Aplicación de Quejas - servidor OK',
-      endpoints: {
-        reportes: '/api/reportes/quejas-por-entidad',
-        entidades: '/api/entidades'
-      }
-    });
-  } catch (err) {
-    next(err);
-  }
-});
+var router = express.Router()
 
-module.exports = router;
+var getEntidadesCache = require('../models/cache').getEntidadesCache
+
+router.get('/', async (req, res) => {
+  const entidades = getEntidadesCache() || []
+  res.render('lista-quejas', {
+    entidades,
+    quejas: [],
+    paginas: [],
+    paginaActual: 1,
+    activePage: 'lista'
+  })
+})
+
+
+
+module.exports = router

@@ -1,18 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const { pool } = require('../models/db');
+
 
 const { getEntidadesCache } = require('../models/cache');
-const { createQueja, getQuejasPaginadasForEntity } = require('../services/quejas.service');
+const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad } = require('../services/quejas.service');
 
 // GET /registrar → renderiza el formulario con entidades
 router.get('/registrar', async (req, res) => {
   try {
     const entidades = getEntidadesCache() || [];
     console.log('Entidades en cache (registrar):', entidades);
-    res.render('registrar', { entidades });
+    res.render('registrar', { entidades, activePage: 'registrar' });
   } catch (err) {
-    res.render('registrar', { entidades: [] });
+    res.render('registrar', { entidades: [], activePage: 'registrar' });
   }
 });
 
@@ -53,5 +53,20 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+
+// GET /api/quejas/quejas-por-entidad → lista paginada por entidad
+router.get('/quejas-por-entidad', async (req, res) => {
+  try {
+    const rows = await getReporteQuejasPorEntidad();
+    res.json(rows);
+  } catch (err) {
+    console.error('Error en /api/reportes/quejas-por-entidad:', err.message || err);
+    res.status(500).json({ error: 'Error al generar el reporte', details: err.message });
+  }
+});
+
+
+
 
 module.exports = router;

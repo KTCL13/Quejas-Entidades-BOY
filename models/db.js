@@ -1,15 +1,9 @@
-// Cargar variables de entorno antes de crear el pool
-require('dotenv').config();
+var postgres = require('postgres')
+var dotenv = require('dotenv')
 
-const { Pool } = require('pg');
+dotenv.config()
 
-const pool = new Pool({
-  user: process.env.DB_USER || 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  database: process.env.DB_DATABASE || 'Quejas', // usa exactamente el valor de .env (ej. "Quejas")
-  password: process.env.DB_PASSWORD || '',
-  port: Number(process.env.DB_PORT) || 5432,
-  // opcional: max, idleTimeoutMillis, connectionTimeoutMillis
-});
+const connectionString = process.env.DATABASE_URL
+const sql = postgres(connectionString)
 
-module.exports = { pool };
+module.exports = sql
