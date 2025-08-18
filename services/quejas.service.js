@@ -78,3 +78,25 @@ export const createQueja = async ({ texto, id_entidad }) => {
 
   return nuevaQueja
 }
+
+
+// Reporte: número de quejas por entidad
+export const getReporteQuejasPorEntidad = async () => {
+  try {
+    const res = await sql`
+      SELECT e.id_entidad, e.nombre_entidad, COUNT(q.id_queja) AS total_quejas
+      FROM entidades e
+      LEFT JOIN quejas q ON e.id_entidad = q.id_entidad
+      GROUP BY e.id_entidad, e.nombre_entidad
+      ORDER BY total_quejas DESC
+    `
+    return res;
+  } catch (err) {
+    console.error('Error generando reporte de quejas por entidad:', err);
+    throw err;
+  }
+}
+
+
+
+
