@@ -1,6 +1,6 @@
 import express from 'express';
 import request from 'supertest';
-import router from './quejas.js';
+import router from '../routes/quejas.js';
 import { getEntidadesCache } from '../models/cache.js';
 import { createQueja, getQuejasPaginadasForEntity } from '../services/quejas.service.js';
 
