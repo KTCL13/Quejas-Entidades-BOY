@@ -1,5 +1,9 @@
 name: Create branch from issue
 
+
+permissions:
+  contents: write
+
 on:
   issues:
     types: [opened]
