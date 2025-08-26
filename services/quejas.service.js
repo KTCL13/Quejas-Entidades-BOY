@@ -36,7 +36,7 @@ export const getQuejasPaginadasForEntity = async (entidadId, page = 1, limit = 1
 export const loadEntidades = async () => {
   const entidades = await sql`
     SELECT * FROM entidades
-    ORDER BY id_entidad
+    ORDER BY nombre_entidad 
   `
   setEntidadesCache(entidades)
 }
