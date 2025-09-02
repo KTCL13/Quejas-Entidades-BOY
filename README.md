@@ -6,7 +6,7 @@ Sistema web para la gestión y reporte de quejas dirigidas a entidades públicas
 
 - **Node.js ^18.x**: Plataforma de ejecución para el backend.
 - **Express**: Framework para la creación de APIs y manejo de rutas.
-- **PostgreSQL 15.x **: Base de datos relacional para almacenar entidades y quejas.
+- **PostgreSQL 15.x**: Base de datos relacional para almacenar entidades y quejas.
 - **Supabase**: Servicio de hosting para la base de datos PostgreSQL.
 - **Pug**: Motor de plantillas para renderizar vistas en el servidor.
 - **Bootstrap 5**: Framework CSS para estilos y componentes responsivos.
