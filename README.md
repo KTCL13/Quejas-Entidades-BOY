@@ -29,6 +29,9 @@ Sistema web para la gestión y reporte de quejas dirigidas a entidades públicas
 3. Configura las variables de entorno en `.env`:
    ```
    DATABASE_URL=postgresql://usuario:contraseña@host:puerto/base_de_datos
+   EMAIL_USER: nombreempresa@email.com
+   EMAIL_PASS:password
+   EMAIL_TO=nameusuario@email.com
    ```
 
 4. Inicia el servidor:
