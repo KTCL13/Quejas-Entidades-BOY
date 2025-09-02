@@ -6,7 +6,7 @@
 
 - Cierra # (número del issue)
 
-## ประเภท de Cambio
+## tipo de Cambio
 
 - [ ] 🐛 Corrección de bug (Bug fix)
 - [ ] ✨ Nueva funcionalidad (New feature)
