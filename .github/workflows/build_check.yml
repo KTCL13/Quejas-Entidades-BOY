@@ -3,7 +3,7 @@ name: Build Check
 on:
   pull_request:
     branches:
-      - main 
+      - main
 
 jobs:
   build:
@@ -16,11 +16,12 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' 
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run build
-        run: npm run build
+      # Verificar que la app arranca (sin quedarse colgada)
+      - name: Check app starts
+        run: node -e "require('./app'); console.log('✅ App loaded OK')"
