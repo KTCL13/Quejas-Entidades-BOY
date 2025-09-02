@@ -19,10 +19,30 @@ html
             li.nav-item
               a.nav-link(class=(activePage === 'registrar' ? 'active fw-bold text-dark' : ''))(href='/api/quejas/registrar') Registrar Queja
             li.nav-item
-              a.nav-link(class=(activePage === 'reportes' ? 'active fw-bold text-dark' : ''))(href='/api/reportes') Número de quejas por entidad
+              a.nav-link#linkReporte(
+                class=(activePage === 'reportes' ? 'active fw-bold text-dark' : '')
+                href='/api/reportes'
+              ) Número de quejas por entidad
 
     // Contenido principal
     .container.mt-4
       block content
 
     script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js")
+
+    // Script para enviar el correo al entrar en reportes
+    script.
+      document.addEventListener('DOMContentLoaded', () => {
+        const linkReporte = document.getElementById('linkReporte');
+        if (linkReporte) {
+          linkReporte.addEventListener('click', async (e) => {
+            try {
+              // Llamar al endpoint que manda el correo
+              await fetch('/api/reportes/ver');
+              console.log("Correo enviado automáticamente al entrar en reportes");
+            } catch (err) {
+              console.error(" Error al enviar correo automático:", err);
+            }
+          });
+        }
+      });
