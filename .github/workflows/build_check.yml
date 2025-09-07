@@ -1,4 +1,4 @@
-name: Build Check
+name: CI Pipeline
 
 on:
   pull_request:
@@ -6,24 +6,31 @@ on:
       - main
 
 jobs:
-  build:
+  quality-check:
     runs-on: ubuntu-latest
+    
     services:
+      # Inicia un contenedor de PostgreSQL para las pruebas
       postgres:
-        image: postgres:latest
+        image: postgres:15 # Usar una versión específica es una buena práctica
         ports:
           - 5432:5432
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: testdb
+        # Opciones para verificar que la base de datos esté lista antes de continuar
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+          
     env:
+      # La URL de la base de datos que usarán los pasos de prueba y migración
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/testdb
+      # Asegura que se usen las variables de entorno de CI
+      NODE_ENV: test 
 
     steps:
       - name: Checkout repository
@@ -38,6 +45,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Verificar que la app arranca (sin quedarse colgada)
-      - name: Check app starts
-        run: node -e "require('./app'); console.log('✅ App loaded OK')"
+      # --- NUEVOS PASOS DE CALIDAD ---
+
+      - name: Run Linter
+        run: npm run lint
+
+      - name: Run Tests
+        run: npm test # Asegúrate de tener un script de 'test' en tu package.json
+
+      - name: Run Database Migrations (Build Step)
+        run: npx sequelize-cli db:migrate
