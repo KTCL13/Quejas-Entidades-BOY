@@ -39,31 +39,31 @@ router.post('/', async (req, res) => {
 // GET /api/quejas → lista paginada por entidad
 router.get('/', async (req, res) => {
   try {
-    const entidadId = req.query.entidadId;
+    const entidadId = parseInt(req.query.entidadId, 10);
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
-    if (!entidadId) {
-      return res.status(400).json({ error: 'Debe seleccionar una entidad.' });
+    if (!entidadId || isNaN(entidadId)) {
+      return res.status(400).json({ error: 'Debe seleccionar una entidad válida.' });
     }
 
-    // 🔹 Verificar token reCAPTCHA
-    const token = req.headers['x-recaptcha-token'];
-    if (!token) {
-      return res.status(400).json({ error: 'Token de reCAPTCHA faltante.' });
+    if (process.env.NODE_ENV !== 'test') {
+      const token = req.headers['x-recaptcha-token'];
+      if (!token) {
+        return res.status(400).json({ error: 'Token de reCAPTCHA faltante.' });
+      }
+
+      const verifyRes = await fetch(
+        `https://www.google.com/recaptcha/api/siteverify?secret=TU_CLAVE_SECRETA&response=${token}`,
+        { method: 'POST' }
+      );
+      const verifyData = await verifyRes.json();
+
+      if (!verifyData.success || verifyData.score < 0.5) {
+        return res.status(403).json({ error: 'Fallo la verificación de reCAPTCHA.' });
+      }
     }
-
-    const verifyRes = await fetch(
-      `https://www.google.com/recaptcha/api/siteverify?secret=6LeBKKkrAAAAAK-lSIe8Tbx1aBoGL1tAkb2KgxpP&response=${token}`,
-      { method: 'POST' }
-    );
-    const verifyData = await verifyRes.json();
-
-    console.log("data:", verifyData);
-
-    if (!verifyData.success || verifyData.score < 0.5) {
-      return res.status(403).json({ error: 'Fallo la verificación de reCAPTCHA.' });
-    }
+    // --- TERMINA LA MODIFICACIÓN ---
 
     // 🔹 Si pasó la validación, obtener datos
     const result = await getQuejasPaginadasForEntity(entidadId, page, limit);
@@ -74,7 +74,6 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
 
 // GET /api/quejas/quejas-por-entidad → lista paginada por entidad
 router.get('/quejas-por-entidad', async (req, res) => {

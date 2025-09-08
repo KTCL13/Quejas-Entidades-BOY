@@ -1,20 +1,23 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
+// Define las opciones de conexión base
+const options = {
   dialect: 'postgres',
-  dialectOptions: {
+  logging: false
+};
+
+// Lógica condicional para SSL en producción
+if (process.env.NODE_ENV === 'production') {
+  options.dialectOptions = {
     ssl: {
       require: true,
       rejectUnauthorized: false
     }
-  },
-  logging: false
-});
+  };
+}
 
-
-sequelize.authenticate()
-  .then(() => console.log('Conexión a DB establecida con Sequelize.'))
-  .catch(err => console.error('No se pudo conectar a DB:', err));
+// Crea y EXPORTA la instancia, pero NO te conectes aquí
+const sequelize = new Sequelize(process.env.DATABASE_URL, options);
 
 module.exports = sequelize;

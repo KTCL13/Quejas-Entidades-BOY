@@ -2,9 +2,12 @@
 
 const express = require('express');
 const request = require('supertest');
+
 const router = require('../routes/quejas.js');
 const { getEntidadesCache } = require('../config/cache.js');
 const { createQueja, getQuejasPaginadasForEntity } = require('../services/quejas.service.js');
+
+const sequelize = require('../config/database');
 
 jest.mock('../config/cache.js');
 jest.mock('../services/quejas.service.js');
@@ -72,7 +75,7 @@ describe('Rutas de quejas', () => {
     it('debería retornar error si no hay entidadId', async () => {
       const res = await request(app).get('/');
       expect(res.status).toBe(400);
-      expect(res.body).toHaveProperty('error', 'Debe seleccionar una entidad.');
+      expect(res.body).toHaveProperty('error', 'Debe seleccionar una entidad válida.');
     });
 
     it('debería retornar quejas paginadas', async () => {
@@ -95,4 +98,8 @@ describe('Rutas de quejas', () => {
       });
     });
   });
+});
+
+afterAll(async () => {
+  await sequelize.close();
 });

@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "user_dev",
+    "password": "user_dev_password",
+    "database": "quejas_db_dev",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "user_test",
+    "password": "user_test_password",
+    "database": "quejas_db_test",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
