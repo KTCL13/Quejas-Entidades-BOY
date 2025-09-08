@@ -1,27 +1,66 @@
-name: Build Check
+# Nombre del workflow que aparecerá en la pestaña "Actions" de GitHub
+name: Node.js CI Pipeline
 
+# Se ejecuta en cada Pull Request dirigido a la rama 'main'
 on:
   pull_request:
     branches:
       - main
 
 jobs:
-  build:
+  # El único trabajo que tenemos se llama 'quality-check'
+  quality-check:
+    # Se ejecutará en la última versión de Ubuntu
     runs-on: ubuntu-latest
 
+    # Inicia servicios adicionales. En este caso, una base de datos PostgreSQL.
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db # Un nombre de DB específico para pruebas
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    # Variables de entorno disponibles para todos los pasos del job
+    env:
+      # La URL para que la aplicación se conecte al servicio de Postgres
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
+      # Establece el entorno a 'test' para que se omitan cosas como reCAPTCHA
+      NODE_ENV: test
+
+    # Pasos que se ejecutarán en orden
     steps:
+      # 1. Clona el repositorio en la máquina virtual del runner
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Configura el entorno de Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
+      # 3. Instala las dependencias de forma limpia y rápida
       - name: Install dependencies
         run: npm ci
 
-      # Verificar que la app arranca (sin quedarse colgada)
-      - name: Check app starts
-        run: node -e "require('./app'); console.log('✅ App loaded OK')"
+      # 4. Ejecuta el linter para verificar la calidad y estilo del código
+      - name: Code Quality - Run Linter
+        run: npm run lint
+
+      # 5. Prepara la base de datos de prueba ejecutando las migraciones
+      - name: Database - Run Migrations
+        run: npx sequelize-cli db:migrate
+
+      # 6. Ejecuta las pruebas automatizadas (Jest)
+      - name: Run Automated Tests
+        run: npm test

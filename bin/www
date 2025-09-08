@@ -6,6 +6,7 @@
 
 var app = require('../app');
 var debug = require('debug')('quejas-entidades-boy:server');
+const sequelize = require('../config/database');
 var http = require('http');
 
 /**
@@ -21,13 +22,24 @@ app.set('port', port);
 
 var server = http.createServer(app);
 
-/**
- * Listen on provided port, on all network interfaces.
- */
+async function startServer() {
+  try {
+    // 1. Verifica la conexión a la base de datos
+    await sequelize.authenticate();
+    console.log('Conexión a la base de datos establecida con éxito.');
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+    // 2. Si la conexión es exitosa, inicia el servidor
+    server.listen(port);
+    server.on('error', onError);
+    server.on('listening', onListening);
+
+  } catch (error) {
+    console.error('No se pudo conectar a la base de datos:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
 
 /**
  * Normalize a port into a number, string, or false.
