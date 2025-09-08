@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { getEntidadesCache } = require('../models/cache');
+const { getEntidadesCache } = require('../config/cache');
 const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad } = require('../services/quejas.service');
 
 // GET /registrar → renderiza el formulario con entidades
@@ -11,6 +11,7 @@ router.get('/registrar', async (req, res) => {
     console.log('Entidades en cache (registrar):', entidades);
     res.render('registrar', { entidades, activePage: 'registrar' });
   } catch (err) {
+    console.error('Error al obtener entidades para /registrar:', err);
     res.render('registrar', { entidades: [], activePage: 'registrar' });
   }
 });

@@ -6,6 +6,7 @@
 
 var app = require('../app');
 var debug = require('debug')('quejas-entidades-boy:server');
+const { sequelize } = require('../models'); // Asegúrate de que la ruta es correcta
 var http = require('http');
 
 /**
@@ -24,10 +25,15 @@ var server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+sequelize.sync()
+  .then(() => {
+    console.log('Base de datos sincronizada.');
+    server.listen(port);
+    server.on('listening', onListening);
+  })
+  .catch(error => {
+    console.error('Error al sincronizar la base de datos:', error);
+  });
 
 /**
  * Normalize a port into a number, string, or false.

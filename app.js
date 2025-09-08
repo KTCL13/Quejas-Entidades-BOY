@@ -5,6 +5,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+
 var indexRouter = require('./routes/index');
 var quejasRouter = require('./routes/quejas');
 var reportesRouter = require('./routes/reportes');
@@ -34,12 +35,12 @@ app.use('/', indexRouter);
 loadEntidades();
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res) {
   res.status(err.status || 500);
   const isApi = req.originalUrl && req.originalUrl.startsWith('/api');
   const wantsJson = req.accepts && req.accepts('json') === 'json';
@@ -52,7 +53,7 @@ app.use(function(err, req, res, next) {
   }
 
   // Intentar renderizar la vista 'error'; si no existe, devolver HTML plano
-  res.render('error', { message: err.message, error: req.app.get('env') === 'development' ? err : {} }, function(renderErr, html) {
+  res.render('error', { message: err.message, error: req.app.get('env') === 'development' ? err : {} }, function (renderErr, html) {
     if (renderErr) {
       // Vista no encontrada o fallo al renderizar -> enviar HTML simple
       console.error('No se pudo renderizar la vista de error:', renderErr.message);

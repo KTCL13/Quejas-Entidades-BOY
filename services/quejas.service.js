@@ -1,23 +1,21 @@
-import sql from '../models/db.js';
-import { setEntidadesCache } from '../models/cache.js';
+const { Queja, Entidad } = require('../models');
+const { setEntidadesCache } = require('../config/cache');
 
-export const getQuejasPaginadasForEntity = async (entidadId, page = 1, limit = 10) => {
+// Obtener quejas paginadas por entidad
+exports.getQuejasPaginadasForEntity = async (entidadId, page = 1, limit = 10) => {
   try {
-    const offset = (page - 1) * limit
+    const offset = (page - 1) * limit;
 
-    const quejas = await sql`
-      SELECT q.*, e.nombre_entidad
-      FROM quejas q
-      JOIN entidades e ON q.id_entidad = e.id_entidad
-      WHERE q.id_entidad = ${entidadId}
-      ORDER BY q.id_queja
-      LIMIT ${limit} OFFSET ${offset}
-    `
-
-    const [{ count }] = await sql`
-      SELECT COUNT(*)::int AS count FROM quejas
-      WHERE id_entidad = ${entidadId}
-    `
+    const { rows: quejas, count } = await Queja.findAndCountAll({
+      where: { id_entidad: entidadId },
+      include: [{
+        model: Entidad,
+        attributes: ['nombre_entidad']
+      }],
+      order: [['id_queja', 'ASC']],
+      limit,
+      offset
+    });
 
     return {
       data: quejas,
@@ -25,77 +23,77 @@ export const getQuejasPaginadasForEntity = async (entidadId, page = 1, limit = 1
       limit,
       total: count,
       totalPages: Math.ceil(count / limit)
-    }
+    };
   } catch (error) {
-    console.error(error)
-    throw new Error('Error al obtener las quejas')
+    console.error(error);
+    throw new Error('Error al obtener las quejas');
   }
-}
+};
 
+// Cargar entidades en caché
+exports.loadEntidades = async () => {
+  const entidades = await Entidad.findAll({
+    order: [['nombre_entidad', 'ASC']]
+  });
+  setEntidadesCache(entidades);
+};
 
-export const loadEntidades = async () => {
-  const entidades = await sql`
-    SELECT * FROM entidades
-    ORDER BY nombre_entidad 
-  `
-  setEntidadesCache(entidades)
-}
-
-// Devuelve todas las entidades (para el formulario de registrar quejas)
-export const getEntidades = async () => {
+// Obtener todas las entidades
+exports.getEntidades = async () => {
   try {
-    const entidades = await sql`
-      SELECT * FROM entidades
-      ORDER BY id_entidad
-    `
-    return entidades
+    const entidades = await Entidad.findAll({
+      order: [['id_entidad', 'ASC']]
+    });
+    return entidades;
   } catch (error) {
-    console.error(error)
-    throw new Error('Error al obtener las entidades')
+    console.error(error);
+    throw new Error('Error al obtener las entidades');
   }
-}
+};
 
-//Parte relacionada a registrar quejas
-export const createQueja = async ({ texto, id_entidad }) => {
+// Registrar una nueva queja
+exports.createQueja = async ({ texto, id_entidad }) => {
   if (!texto || texto.trim().length < 10 || texto.trim().length > 2000) {
-    throw new Error('La queja debe tener entre 10 y 2000 caracteres')
+    throw new Error('La queja debe tener entre 10 y 2000 caracteres');
   }
 
-  // validar si la entidad existe
-  const [entidad] = await sql`
-    SELECT id_entidad FROM entidades WHERE id_entidad = ${id_entidad}
-  `
+  // Validar si la entidad existe
+  const entidad = await Entidad.findByPk(id_entidad);
   if (!entidad) {
-    throw new Error('La entidad especificada no existe')
+    throw new Error('La entidad especificada no existe');
   }
 
-  // se insertan quejas
-  const [nuevaQueja] = await sql`
-    INSERT INTO quejas (descripcion_queja, id_entidad)
-    VALUES (${texto.trim()}, ${id_entidad})
-    RETURNING *
-  `
+  // Insertar queja
+  const nuevaQueja = await Queja.create({
+    descripcion_queja: texto.trim(),
+    id_entidad
+  });
 
-  return nuevaQueja
-}
-
+  return nuevaQueja;
+};
 
 // Reporte: número de quejas por entidad
-export const getReporteQuejasPorEntidad = async () => {
+exports.getReporteQuejasPorEntidad = async () => {
   try {
-    const res = await sql`
-      SELECT e.id_entidad, e.nombre_entidad, COUNT(q.id_queja) AS total_quejas
-      FROM entidades e
-      LEFT JOIN quejas q ON e.id_entidad = q.id_entidad
-      GROUP BY e.id_entidad, e.nombre_entidad
-      ORDER BY total_quejas DESC
-    `
+    const res = await Entidad.findAll({
+      attributes: [
+        'id_entidad',
+        'nombre_entidad',
+        [Queja.sequelize.fn('COUNT', Queja.sequelize.col('quejas.id_queja')), 'total_quejas']
+      ],
+      include: [{
+        model: Queja,
+        attributes: []
+      }],
+      group: ['Entidad.id_entidad'],
+      order: [[Queja.sequelize.literal('total_quejas'), 'DESC']]
+    });
     return res;
   } catch (err) {
     console.error('Error generando reporte de quejas por entidad:', err);
     throw err;
   }
-}
+};
 
 
 
