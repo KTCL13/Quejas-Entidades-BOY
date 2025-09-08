@@ -8,10 +8,8 @@ const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad } =
 router.get('/registrar', async (req, res) => {
   try {
     const entidades = getEntidadesCache() || [];
-    console.log('Entidades en cache (registrar):', entidades);
     res.render('registrar', { entidades, activePage: 'registrar' });
-  } catch (err) {
-    console.error('Error al obtener entidades para /registrar:', err);
+  } catch {
     res.render('registrar', { entidades: [], activePage: 'registrar' });
   }
 });
@@ -21,7 +19,6 @@ router.post('/', async (req, res) => {
   try {
     const { texto, id_entidad } = req.body;
 
-    // Validaciones básicas
     if (!texto || texto.trim().length < 10 || texto.trim().length > 2000) {
       return res.status(400).json({ error: "La queja debe tener entre 10 y 2000 caracteres." });
     }
@@ -31,13 +28,24 @@ router.post('/', async (req, res) => {
 
     const queja = await createQueja({ texto, id_entidad });
     res.status(201).json({ message: "Queja registrada", data: queja });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch {
+    res.status(500).json({ error: 'Error al registrar la queja.' });
   }
 });
 
-// GET /api/quejas → lista paginada por entidad
-router.get('/', async (req, res) => {
+// Controlador para verificar reCAPTCHA
+async function verificarRecaptcha(token) {
+  const secret = process.env.RECAPTCHA_SECRET || 'TU_CLAVE_SECRETA';
+  const verifyRes = await fetch(
+    `https://www.google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`,
+    { method: 'POST' }
+  );
+  const verifyData = await verifyRes.json();
+  return verifyData.success && verifyData.score >= 0.5;
+}
+
+// Controlador para obtener quejas paginadas
+async function obtenerQuejas(req, res) {
   try {
     const entidadId = parseInt(req.query.entidadId, 10);
     const page = parseInt(req.query.page) || 1;
@@ -52,28 +60,21 @@ router.get('/', async (req, res) => {
       if (!token) {
         return res.status(400).json({ error: 'Token de reCAPTCHA faltante.' });
       }
-
-      const verifyRes = await fetch(
-        `https://www.google.com/recaptcha/api/siteverify?secret=TU_CLAVE_SECRETA&response=${token}`,
-        { method: 'POST' }
-      );
-      const verifyData = await verifyRes.json();
-
-      if (!verifyData.success || verifyData.score < 0.5) {
+      const recaptchaOk = await verificarRecaptcha(token);
+      if (!recaptchaOk) {
         return res.status(403).json({ error: 'Fallo la verificación de reCAPTCHA.' });
       }
     }
-    // --- TERMINA LA MODIFICACIÓN ---
 
-    // 🔹 Si pasó la validación, obtener datos
     const result = await getQuejasPaginadasForEntity(entidadId, page, limit);
     res.json(result);
-
-  } catch (err) {
-    console.error("Error en /api/quejas:", err);
-    res.status(500).json({ error: err.message });
+  } catch {
+    res.status(500).json({ error: 'Error al obtener las quejas.' });
   }
-});
+}
+
+// GET /api/quejas → lista paginada por entidad
+router.get('/', obtenerQuejas);
 
 // GET /api/quejas/quejas-por-entidad → lista paginada por entidad
 router.get('/quejas-por-entidad', async (req, res) => {
