@@ -86,6 +86,18 @@ El servidor estará disponible en [http://localhost:3000](http://localhost:3000)
 
 ---
 
+### 7. Servicio de correo 
+
+ El sistema utiliza un servicio de correo para enviar notificaciones automáticas cuando se registra una nueva queja o se genera un reporte.
+
+ ###  Configuración 
+
+ Definir las varivales en el archivo .env 
+
+EMAIL_USER=correo@gmail.com --> Correo desde el que se envían las notificaciones.
+EMAIL_PASS=contraseña --> Contraseña o token de aplicación del correo.
+EMAIL_TO=destinatario@gmail.com --> Correo destinatario de las notificaciones.
+
 ## Scripts útiles
 
 - `npm run dev` — Ejecuta el servidor en modo desarrollo con reinicio automático (nodemon).
