@@ -3,6 +3,7 @@ const router = express.Router();
 
 const { getEntidadesCache } = require('../config/cache');
 const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad } = require('../services/quejas.service');
+const { enviarCorreo } = require('../services/email.service'); //importamos el servicio de correo email.srviece.js
 
 // GET /registrar → renderiza el formulario con entidades
 router.get('/registrar', async (req, res) => {
@@ -36,7 +37,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// GET /api/quejas → lista paginada por entidad
+// GET /api/quejas → lista paginada por entidad + notificación por correo
 router.get('/', async (req, res) => {
   try {
     const entidadId = parseInt(req.query.entidadId, 10);
@@ -63,9 +64,19 @@ router.get('/', async (req, res) => {
         return res.status(403).json({ error: 'Fallo la verificación de reCAPTCHA.' });
       }
     }
-    // --- TERMINA LA MODIFICACIÓN ---
 
-    // 🔹 Si pasó la validación, obtener datos
+    // 🔹 Metadatos para el correo
+    const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+    // Enviar correo de notificación
+    await enviarCorreo({
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_TO,
+      subject: "Consulta de lista de quejas",
+      text: `Un usuario consultó la lista de quejas (entidadId=${entidadId}) desde la IP: ${clientIp}`
+    });
+
+    // 🔹 Obtener datos de quejas
     const result = await getQuejasPaginadasForEntity(entidadId, page, limit);
     res.json(result);
 
@@ -75,7 +86,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/quejas/quejas-por-entidad → lista paginada por entidad
+// GET /api/quejas/quejas-por-entidad → reporte
 router.get('/quejas-por-entidad', async (req, res) => {
   try {
     const rows = await getReporteQuejasPorEntidad();
@@ -85,7 +96,5 @@ router.get('/quejas-por-entidad', async (req, res) => {
     res.status(500).json({ error: 'Error al generar el reporte', details: err.message });
   }
 });
-
-
 
 module.exports = router;
