@@ -3,6 +3,7 @@ const router = express.Router();
 
 const { getEntidadesCache } = require('../config/cache');
 const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad } = require('../services/quejas.service');
+const { verifyRecaptcha } = require('../middleware/recaptcha');
 
 // GET /registrar → renderiza el formulario con entidades
 router.get('/registrar', async (req, res) => {
@@ -33,16 +34,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Controlador para verificar reCAPTCHA
-async function verificarRecaptcha(token) {
-  const secret = process.env.RECAPTCHA_SECRET || 'TU_CLAVE_SECRETA';
-  const verifyRes = await fetch(
-    `https://www.google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`,
-    { method: 'POST' }
-  );
-  const verifyData = await verifyRes.json();
-  return verifyData.success && verifyData.score >= 0.5;
-}
+
 
 // Controlador para obtener quejas paginadas
 async function obtenerQuejas(req, res) {
@@ -60,7 +52,7 @@ async function obtenerQuejas(req, res) {
       if (!token) {
         return res.status(400).json({ error: 'Token de reCAPTCHA faltante.' });
       }
-      const recaptchaOk = await verificarRecaptcha(token);
+      const recaptchaOk = await verifyRecaptcha(token);
       if (!recaptchaOk) {
         return res.status(403).json({ error: 'Fallo la verificación de reCAPTCHA.' });
       }
