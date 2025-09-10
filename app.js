@@ -5,7 +5,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var listaQuejasRouter = require('./routes/listaquejas');
+
+var ListaQuejasRouter = require('./routes/ListaQuejas');
 var quejasRouter = require('./routes/quejas');
 var reportesRouter = require('./routes/reportes');
 const { loadEntidades } = require('./services/quejas.service');
@@ -22,14 +23,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use(express.static(path.join(__dirname, 'src/public')));
 
+app.use(express.static(path.join(__dirname, 'src/public')));
 app.use(express.static(path.join(__dirname, 'src/views')));
 
 
 app.use('/api/quejas', quejasRouter);
 app.use('/api/reportes', reportesRouter);
-app.use('/', listaQuejasRouter);
+app.use('/', ListaQuejasRouter); 
+
 
 loadEntidades();
 
@@ -51,13 +53,11 @@ app.use(function (err, req, res) {
     });
   }
 
-
   res.render(
     'error',
     { message: err.message, error: req.app.get('env') === 'development' ? err : {} },
     function (renderErr, html) {
       if (renderErr) {
-
         console.error('No se pudo renderizar la vista de error:', renderErr.message);
         return res.send(`<h1>Error</h1><pre>${err.message}</pre>`);
       }
