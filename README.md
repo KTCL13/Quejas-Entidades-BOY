@@ -50,6 +50,7 @@ EMAIL_USER=nombreempresa@email.com
 EMAIL_PASS=password
 EMAIL_TO=nameusuario@email.com
 ADMIN_PASS=adminPassword
+RECAPTCHA_SECRET_KEY= recaptchakey
 ```
 
 ### 4. Levanta la base de datos local con Docker

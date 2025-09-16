@@ -13,6 +13,11 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false
       },
+      isDeleted_queja: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
       id_entidad: {
         type: Sequelize.BIGINT,
         references: {

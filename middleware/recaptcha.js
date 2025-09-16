@@ -1,7 +1,7 @@
 
 const verifyRecaptcha = async (token) => {
 
-    if (process.env.NODE_ENV === 'test') {
+    if (process.env.NODE_ENV === 'development ') {
         return true;
     }
 
