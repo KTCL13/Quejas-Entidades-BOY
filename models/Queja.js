@@ -12,6 +12,12 @@ const Queja = sequelize.define('Queja', {
   descripcion_queja: {
     type: DataTypes.TEXT,
     allowNull: false
+  },
+
+  isDeleted_queja: {
+    type: DataTypes.BOOLEAN,
+    allowNull:false,
+    defaultValue:false
   }
 
 }, {
