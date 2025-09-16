@@ -49,6 +49,7 @@ DB_PORT=5432
 EMAIL_USER=nombreempresa@email.com
 EMAIL_PASS=password
 EMAIL_TO=nameusuario@email.com
+ADMIN_PASS=adminPassword
 ```
 
 ### 4. Levanta la base de datos local con Docker
