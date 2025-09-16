@@ -72,6 +72,20 @@ exports.createQueja = async ({ texto, id_entidad }) => {
   return nuevaQueja;
 };
 
+// Eliminar una queja por ID
+exports.deleteQueja = async (id) => {
+  try {
+    const result = await Queja.destroy({
+      where: { id_queja: id }
+    });
+
+    return result; // Devuelve 0 si no eliminó nada, 1 si eliminó
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error al eliminar la queja');
+  }
+};
+
 // Reporte: número de quejas por entidad
 exports.getReporteQuejasPorEntidad = async () => {
   try {
@@ -94,7 +108,3 @@ exports.getReporteQuejasPorEntidad = async () => {
     throw err;
   }
 };
-
-
-
-
