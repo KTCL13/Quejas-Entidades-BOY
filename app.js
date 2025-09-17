@@ -8,7 +8,7 @@ var logger = require('morgan');
 var listaQuejasRouter = require('./routes/listaQuejas');
 var quejasRouter = require('./routes/quejas');
 var reportesRouter = require('./routes/reportes');
-const { loadEntidades } = require('./services/quejas.service');
+const { loadEntities } = require('./services/quejas.service');
 
 var app = express();
 
@@ -31,7 +31,7 @@ app.use('/api/quejas', quejasRouter);
 app.use('/api/reportes', reportesRouter);
 app.use('/', listaQuejasRouter);
 
-loadEntidades();
+loadEntities();
 
 
 app.use(function (req, res, next) {
