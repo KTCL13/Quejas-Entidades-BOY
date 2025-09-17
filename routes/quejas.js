@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { getEntidadesCache } = require('../config/cache');
-const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad } = require('../services/quejas.service');
+const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad } = require('../services/complaint.service');
 const { enviarCorreo } = require('../services/email.service'); //importamos el servicio de correo email.srviece.js
 const { verifyRecaptcha } = require('../middleware/recaptcha');
 
