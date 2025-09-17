@@ -5,7 +5,7 @@ const request = require('supertest');
 
 const router = require('../routes/quejas.js');
 const { getEntidadesCache } = require('../config/cache.js');
-const { createQueja, getQuejasPaginadasForEntity } = require('../services/complaint.service.js');
+const { createComplaint, getPaginatedcomplaintForEntity } = require('../services/complaint.service.js');
 
 const sequelize = require('../config/database');
 
@@ -41,7 +41,7 @@ describe('Rutas de quejas', () => {
 
   describe('POST /', () => {
     it('debería crear una queja válida', async () => {
-      createQueja.mockResolvedValue({ id_queja: 1, descripcion_queja: 'Texto de prueba', id_entidad: 1 });
+      createComplaint.mockResolvedValue({ id_queja: 1, descripcion_queja: 'Texto de prueba', id_entidad: 1 });
 
       const res = await request(app)
         .post('/')
@@ -79,7 +79,7 @@ describe('Rutas de quejas', () => {
     });
 
     it('debería retornar quejas paginadas', async () => {
-      getQuejasPaginadasForEntity.mockResolvedValue({
+      getPaginatedcomplaintForEntity.mockResolvedValue({
         page: 1,
         limit: 10,
         total: 1,
