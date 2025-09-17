@@ -5,7 +5,7 @@ const request = require("supertest");
 
 const router = require("../routes/quejas.js");
 const { getEntidadesCache } = require("../config/cache.js");
-const complaintService = require("../services/complaint.service.js"); // importo todo el módulo
+const complaintService = require("../services/complaint.service.js");
 
 const sequelize = require("../config/database");
 
@@ -27,7 +27,7 @@ describe("Rutas de quejas", () => {
       const app = express();
       app.use((req, res, next) => {
         res.render = jest.fn((view, options) => {
-          res.json({ view, options }); // devolver JSON en vez de renderizar
+          res.json({ view, options }); // para poder verificar
         });
         next();
       });
@@ -44,7 +44,7 @@ describe("Rutas de quejas", () => {
 
   describe("POST /", () => {
     it("debería crear una queja válida", async () => {
-      complaintService.createQueja.mockResolvedValue({
+      complaintService.createComplaint.mockResolvedValue({
         id_queja: 1,
         descripcion_queja: "Texto de prueba",
         id_entidad: 1,
@@ -102,17 +102,11 @@ describe("Rutas de quejas", () => {
     });
 
     it("debería retornar quejas paginadas", async () => {
-      complaintService.getQuejasPaginadasForEntity.mockResolvedValue({
+      complaintService.getPaginatedcomplaintForEntity.mockResolvedValue({
         page: 1,
         limit: 10,
         total: 1,
-        data: [
-          {
-            id_queja: 1,
-            descripcion_queja: "Queja test",
-            id_entidad: 1,
-          },
-        ],
+        data: [{ id_queja: 1, descripcion_queja: "Queja test", id_entidad: 1 }],
         totalPages: 1,
       });
 
@@ -125,13 +119,7 @@ describe("Rutas de quejas", () => {
         page: 1,
         limit: 10,
         total: 1,
-        data: [
-          {
-            id_queja: 1,
-            descripcion_queja: "Queja test",
-            id_entidad: 1,
-          },
-        ],
+        data: [{ id_queja: 1, descripcion_queja: "Queja test", id_entidad: 1 }],
         totalPages: 1,
       });
     });
