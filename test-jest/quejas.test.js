@@ -1,5 +1,4 @@
 /* eslint-env jest */
-
 const express = require("express");
 const request = require("supertest");
 
@@ -7,14 +6,20 @@ const router = require("../routes/quejas.js");
 const { getEntidadesCache } = require("../config/cache.js");
 const complaintService = require("../services/complaint.service.js");
 
-const sequelize = require("../config/database");
-
+// ✅ mock de cache y services
 jest.mock("../config/cache.js");
 jest.mock("../services/complaint.service.js");
+// ✅ mock de email para que no falle por credenciales
+jest.mock("../services/email.service.js", () => ({
+  sendEmail: jest.fn().mockResolvedValue(true),
+}));
+
+const sequelize = require("../config/database");
 
 const app = express();
 app.use(express.json());
 app.use(router);
+
 
 describe("Rutas de quejas", () => {
   describe("GET /registrar", () => {
