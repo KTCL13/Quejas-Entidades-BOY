@@ -5,7 +5,7 @@ const request = require('supertest');
 
 const router = require('../routes/quejas.js');
 const { getEntidadesCache } = require('../config/cache.js');
-const { createQueja, getQuejasPaginadasForEntity } = require('../services/quejas.service.js');
+const { createQueja, getQuejasPaginadasForEntity } = require('../services/complaint.service.js');
 
 const sequelize = require('../config/database');
 
