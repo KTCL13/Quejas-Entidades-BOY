@@ -10,7 +10,7 @@ const { createQueja, getQuejasPaginadasForEntity } = require('../services/quejas
 const sequelize = require('../config/database');
 
 jest.mock('../config/cache.js');
-jest.mock('../services/quejas.service.js');
+jest.mock('../services/complaint.service.js');
 
 const app = express();
 app.use(express.json());
