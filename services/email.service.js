@@ -12,12 +12,12 @@ const transporter = nodemailer.createTransport({
 
 /**
  * Envía un correo electrónico con las opciones proporcionadas
- * @param {Object} opciones - { from, to, subject, text, html }
+ * @param {Object} options - { from, to, subject, text, html }
  * @returns {Object|null} - Información del envío o null si falla
  */
-async function enviarCorreo(opciones) {
+async function sendMail(options) {
   try {
-    const info = await transporter.sendMail(opciones);
+    const info = await transporter.sendMail(options);
     console.log('Correo enviado con exito:', info.messageId);
     return info;
   } catch (error) {
@@ -26,4 +26,4 @@ async function enviarCorreo(opciones) {
   }
 }
 
-module.exports = { enviarCorreo };
+module.exports = { sendMail };

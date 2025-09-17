@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { getEntidadesCache } = require('../config/cache');
-const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad } = require('../services/quejas.service');
+const { createComplaint, getPaginatedComplaintsForEntity, getComplaintsReportByEntity } = require('../services/quejas.service');
 const { enviarCorreo } = require('../services/email.service'); //importamos el servicio de correo email.srviece.js
 const { verifyRecaptcha } = require('../middleware/recaptcha');
 
@@ -28,7 +28,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: "Debe seleccionar una entidad válida." });
     }
 
-    const queja = await createQueja({ texto, id_entidad });
+    const queja = await createComplaint({ texto, id_entidad });
     res.status(201).json({ message: "Queja registrada", data: queja });
   } catch {
     res.status(500).json({ error: 'Error al registrar la queja.' });
@@ -71,7 +71,7 @@ async function obtenerQuejas(req, res) {
 
     // 🔹 Obtener datos de quejas
 
-    const result = await getQuejasPaginadasForEntity(entidadId, page, limit);
+    const result = await getPaginatedComplaintsForEntity(entidadId, page, limit);
     res.json(result);
   } catch {
     res.status(500).json({ error: 'Error al obtener las quejas.' });
@@ -84,7 +84,7 @@ router.get('/', obtenerQuejas);
 // GET /api/quejas/quejas-por-entidad → reporte
 router.get('/quejas-por-entidad', async (req, res) => {
   try {
-    const rows = await getReporteQuejasPorEntidad();
+    const rows = await getComplaintsReportByEntity();
     res.json(rows);
   } catch (err) {
     console.error('Error en /api/reportes/quejas-por-entidad:', err.message || err);
