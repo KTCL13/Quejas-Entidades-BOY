@@ -1,16 +1,16 @@
-const { complaints, Entity } = require('../models');
+const { complaint, Entity } = require('../models');
 const { setCacheEntities } = require('../config/cache');
 
-// Obtener quejas paginadas por entidad
-exports.getPaginatedComplaintsForEntity = async (entityId, page = 1, limit = 10) => {
+// Obtener quejas paginadas por entity
+exports.getPaginatedcomplaintForEntity = async (entityId, page = 1, limit = 10) => {
   try {
     const offset = (page - 1) * limit;
 
-    const { rows: complaints, count } = await complaints.findAndCountAll({
+    const { rows: complaint, count } = await complaint.findAndCountAll({
       where: { Id_entity: entityId },
       include: [{
         model: Entity,
-        attributes: ['name_entity']
+        attributes: ['nombre_entity']
       }],
       order: [['id_queja', 'ASC']],
       limit,
@@ -18,7 +18,7 @@ exports.getPaginatedComplaintsForEntity = async (entityId, page = 1, limit = 10)
     });
 
     return {
-      data: complaints,
+      data: complaint,
       page,
       limit,
       total: count,
@@ -33,7 +33,7 @@ exports.getPaginatedComplaintsForEntity = async (entityId, page = 1, limit = 10)
 // Cargar entities en caché
 exports.loadEntities = async () => {
   const entity = await Entity.findAll({
-    order: [['name_entity', 'ASC']]
+    order: [['nombre_entity', 'ASC']]
   });
   setCacheEntities(entity);
 };
@@ -42,7 +42,7 @@ exports.loadEntities = async () => {
 exports.getEntities = async () => {
   try {
     const entities = await Entity.findAll({
-      order: [['Id_entity', 'ASC']]
+      order: [['id_entity', 'ASC']]
     });
     return entities;
   } catch (error) {
@@ -52,45 +52,45 @@ exports.getEntities = async () => {
 };
 
 // Registrar una nueva queja
-exports.createComplaint = async ({ texto, Id_entity }) => {
-  if (!texto || texto.trim().length < 10 || texto.trim().length > 2000) {
+exports.createComplaint = async ({ text, Id_entity }) => {
+  if (!text || text.trim().length < 10 || text.trim().length > 2000) {
     throw new Error('La queja debe tener entre 10 y 2000 caracteres');
   }
 
-  // Validar si la entidad existe
-  const entidad = await Entity.findByPk(Id_entity);
-  if (!entidad) {
-    throw new Error('La entidad especificada no existe');
+  // Validar si la entity existe
+  const entity = await Entity.findByPk(Id_entity);
+  if (!entity) {
+    throw new Error('La entity especificada no existe');
   }
 
   // Insertar queja
-  const nuevaQueja = await complaints.create({
-    descripcion_queja: texto.trim(),
+  const newComplaint = await complaint.create({
+    descripcion_queja: text.trim(),
     Id_entity
   });
 
-  return nuevaQueja;
+  return newComplaint;
 };
 
-// Reporte: número de quejas por entidad
-exports.getComplaintsReportByEntity = async () => {
+// Reporte: número de quejas por entity
+exports.getcomplaintReportByEntity = async () => {
   try {
     const res = await Entity.findAll({
       attributes: [
-        'Id_entity',
-        'name_entity',
-        [complaints.sequelize.fn('COUNT', complaints.sequelize.col('Quejas.id_queja')), 'total_quejas']
+        'id_entidad',
+        'nombre_entidad',
+        [complaint.sequelize.fn('COUNT', complaint.sequelize.col('Quejas.id_queja')), 'total_quejas']
       ],
       include: [{
-        model: complaints,
+        model: complaint,
         attributes: []
       }],
-      group: ['Entidad.Id_entity'],
-      order: [[complaints.sequelize.literal('total_quejas'), 'DESC']]
+      group: ['Entidad.id_entidad'],
+      order: [[complaint.sequelize.literal('total_quejas'), 'DESC']]
     });
     return res;
   } catch (err) {
-    console.error('Error generando reporte de quejas por entidad:', err);
+    console.error('Error generando reporte de quejas por entity:', err);
     throw err;
   }
 };

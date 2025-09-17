@@ -8,7 +8,7 @@ var logger = require('morgan');
 var listaQuejasRouter = require('./routes/listaQuejas');
 var quejasRouter = require('./routes/quejas');
 var reportesRouter = require('./routes/reportes');
-const { loadEntidades } = require('./services/quejas.service');
+const { loadEntidades } = require('./services/complaint.service');
 
 var app = express();
 
