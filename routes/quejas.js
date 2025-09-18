@@ -4,7 +4,7 @@ const router = express.Router();
 const { getEntidadesCache } = require('../config/cache');
 const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad } = require('../services/quejas.service');
 const { enviarCorreo } = require('../services/email.service'); //importamos el servicio de correo email.srviece.js
-const { verifyRecaptcha } = require('../middleware/recaptcha');
+const { verificarRecaptcha } = require('../middleware/recaptcha');
 
 // GET /registrar → renderiza el formulario con entidades
 router.get('/registrar', async (req, res) => {
@@ -53,7 +53,7 @@ async function obtenerQuejas(req, res) {
       if (!token) {
         return res.status(400).json({ error: 'Token de reCAPTCHA faltante.' });
       }
-      const recaptchaOk = await verifyRecaptcha(token);
+      const recaptchaOk = await verificarRecaptcha(token);
       if (!recaptchaOk) {
         return res.status(403).json({ error: 'Fallo la verificación de reCAPTCHA.' });
       }
