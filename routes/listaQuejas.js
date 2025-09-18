@@ -17,4 +17,4 @@ router.get('/', async (req, res) => {
 
 
 
-module.exports = routerssx
+module.exports = router
