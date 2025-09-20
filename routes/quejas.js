@@ -80,6 +80,20 @@ async function obtenerQuejas(req, res) {
 // GET /api/quejas → lista paginada por entidad
 router.get('/', obtenerQuejas);
 
+//DELETE/api/complaints/:id 
+router.delete('/:id', async (req, res) => {
+  try {
+    const complaintId = parseInt(req.params.id, 10);
+    if (isNaN(complaintId)) {
+      return res.status(400).json({ error: 'ID de queja inválido.' });
+    }
+
+    // Aquí iría la lógica para eliminar la queja de la base de datos
+  } catch {
+    res.status(500).json({ error: 'Error al eliminar la queja.' });
+  }
+});
+
 // GET /api/quejas/quejas-por-entidad → reporte
 router.get('/quejas-por-entidad', async (req, res) => {
   try {
