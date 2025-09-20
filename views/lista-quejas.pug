@@ -15,6 +15,7 @@ block content
         thead.table-secondary
           tr
             th Quejas
+            th Acciones
         tbody
 
       // Controles de paginación
@@ -37,7 +38,7 @@ block content
                 try {
                   const res = await fetch(`/api/quejas?entidadId=${entidadId}&page=${page}&limit=${limit}`, {
                     headers: {
-                      'X-Recaptcha-Token': token 
+                      'X-Recaptcha-Token': token  
                     }
                   });
                   const data = await res.json();
@@ -51,17 +52,23 @@ block content
       }
       async function renderTable(entidadId, page = 1) {
         const result = await fetchQuejas(entidadId, page, rowsPerPage);
-
         tbody.innerHTML = '';
         if (result.data && result.data.length) {
           result.data.forEach(q => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${q.description}</td>`;
+            tr.innerHTML = `
+              <td>${q.description}</td>
+              <td>
+                <button class="btn btn-danger btn-sm" onclick="deleteQueja(${q.id_queja})">
+                  Borrar
+                </button>
+              </td>
+            `;
             tbody.appendChild(tr);
           });
         } else {
           const tr = document.createElement('tr');
-          tr.innerHTML = `<td class="text-center" colspan="1">No hay quejas registradas</td>`;
+          tr.innerHTML = `<td class="text-center" colspan="2">No hay quejas registradas</td>`;
           tbody.appendChild(tr);
         }
 
@@ -121,3 +128,18 @@ block content
         currentPage = 1;
         renderTable(entidadId, currentPage);
       });
+
+      async function deleteQueja(idQueja) {
+        try {
+          const res = await fetch(`/api/quejas/${idQueja}`, {
+            method: 'DELETE',
+          });
+          if (res.ok) {
+            renderTable(currentEntidad, currentPage);
+          } else {
+            console.error('Error al borrar la queja:', res.statusText);
+          }
+        } catch (err) {
+          console.error('Error en deleteQueja:', err);
+        }
+      }
