@@ -41,7 +41,7 @@ exports.loadEntidades = async () => {
 // Obtener todas las entidades
 exports.getEntidades = async () => {
   try {
-    const entidades = await Entidad.findAll({
+    const entidades = await Entity.findAll({
       order: [['id', 'ASC']]
     });
     return entidades;
@@ -64,18 +64,11 @@ exports.createQueja = async ({ texto, id_entidad }) => {
     throw new Error('La entidad especificada no existe');
   }
 
-  try{
 
-    const nuevaQueja = await Queja.create({
-      descripcion_queja: texto.trim(),
-      id_entidad
-    });
-
-    return nuevaQueja;
-
-  }catch(error){
-    console.log(error)
-  }
+  const nuevaQueja = await Queja.create({
+    descripcion_queja: texto.trim(),
+    id_entidad
+  });
 
   return nuevaQueja;
 };
