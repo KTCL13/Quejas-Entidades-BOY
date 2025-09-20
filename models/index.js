@@ -1,12 +1,12 @@
 const sequelize = require('../config/database');
 const Entity= require('./Entity');
-const Queja = require('./Queja');
+const Complaint = require('./Complaint');
 
-Entity.hasMany(Queja, {
+Entity.hasMany(Complaint, {
   foreignKey: 'id_entidad' 
 });
 
-Queja.belongsTo(Entity, {
+Complaint.belongsTo(Entity, {
   foreignKey: 'id_entidad'
 });
 
@@ -14,5 +14,5 @@ Queja.belongsTo(Entity, {
 module.exports = {
   sequelize,
   Entity,
-  Queja
+  Complaint
 };
