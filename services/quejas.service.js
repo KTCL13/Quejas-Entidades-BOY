@@ -87,7 +87,7 @@ exports.getReporteQuejasPorEntidad = async () => {
         'name',
 
         [Complaint.sequelize.fn('COUNT', Complaint.sequelize.col('Complaints.id')), 'total_quejas']
-o
+
       ],
       include: [{
         model: Complaint,

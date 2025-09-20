@@ -3,9 +3,7 @@ const sequelize = require('../config/database');
 
 const Complaint = sequelize.define('Complaint', {
 
-s
   id: {
-
     type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
