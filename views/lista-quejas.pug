@@ -18,6 +18,7 @@ block content
           th Acciones
       tbody
 
+
     // Controles de paginación
     nav.mt-3
       ul.pagination.justify-content-center#pagination
@@ -26,6 +27,7 @@ block content
     let currentPage = 1;
     const rowsPerPage = 10; 
     let currentEntidad = null;
+
 
     const tbody = document.querySelector('table tbody');
     const pagination = document.getElementById('pagination');
@@ -64,6 +66,7 @@ block content
         </button>
             </td>
           `;
+          
           tbody.appendChild(tr);
         });
       } else {
@@ -131,7 +134,7 @@ block content
 
     async function deleteComplaint(complaintId) {
       try {
-        const res = await fetch(`/api/quejas/${complaintId}`, {
+        const res = await fetch(`/api/complaints/${complaintId}`, {
           method: 'DELETE',
         });
         if (res.ok) {
