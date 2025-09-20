@@ -9,7 +9,7 @@ block content
       select(name='id_entidad', id='id_entidad', required, style='width:100%;padding:8px;')
         option(value='') Seleccione una entidad...
         each entidad in entidades
-          option(value=entidad.id_entidad)= entidad.nombre_entidad
+          option(value=entidad.id)= entidad.name
 
     div(style='margin-bottom:20px;')
       label(for='texto', style='display:block;margin-bottom:5px;') Queja

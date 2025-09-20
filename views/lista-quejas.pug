@@ -8,7 +8,7 @@ block content
         select.form-select#entidad(name="entidad")
           option(value="") Seleccione una entidad...
           each entidad in entidades
-            option(value=entidad.id_entidad) #{entidad.nombre_entidad}
+            option(value=entidad.id) #{entidad.name}
 
       // Tabla de quejas
       table.table.table-bordered

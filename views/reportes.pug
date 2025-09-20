@@ -40,7 +40,7 @@ block content
 
         tbody.innerHTML = '';
         data.forEach(row => {
-          const nombre = escapeHtml(row.nombre_entidad || 'Sin nombre');
+          const nombre = escapeHtml(row.name || 'Sin nombre');
           const total = Number(row.total_quejas || 0);
 
           const tr = document.createElement('tr');

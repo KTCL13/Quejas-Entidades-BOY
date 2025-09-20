@@ -21,8 +21,8 @@ module.exports = {
       id_entidad: {
         type: Sequelize.BIGINT,
         references: {
-          model: 'entidades',
-          key: 'id_entidad'
+          model: 'entities',
+          key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL'
