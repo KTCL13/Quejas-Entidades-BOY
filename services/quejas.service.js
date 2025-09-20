@@ -53,7 +53,7 @@ exports.getEntidades = async () => {
 
 // Registrar una nueva queja
 exports.createQueja = async ({ texto, entity_id }) => {
-  
+
   if (!texto || texto.trim().length < 10 || texto.trim().length > 2000) {
     throw new Error('La queja debe tener entre 10 y 2000 caracteres');
   }
@@ -65,7 +65,7 @@ exports.createQueja = async ({ texto, entity_id }) => {
     throw new Error('La entidad especificada no existe');
   }
 
-  console.log(entity_id)
+
 
   const nuevaQueja = await Complaint.create({
     description: texto.trim(),
