@@ -8,7 +8,10 @@ exports.getQuejasPaginadasForEntity = async (entidadId, page = 1, limit = 10) =>
 
     const { rows: quejas, count } = await Complaint.findAndCountAll({
 
-      where: { entity_id: entidadId },
+      where: {
+        entity_id: entidadId,
+        is_deleted: false
+      },
 
       include: [{
         model: Entity,
