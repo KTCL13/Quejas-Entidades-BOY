@@ -3,25 +3,30 @@ const sequelize = require('../config/database');
 
 const Complaint = sequelize.define('Complaint', {
 
-  id_queja: {
+  id: {
     type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
 
-  descripcion_queja: {
+
+  description: {
     type: DataTypes.TEXT,
     allowNull: false
   },
 
-  isDeleted_queja: {
+
+  is_deleted: {
+
     type: DataTypes.BOOLEAN,
     allowNull:false,
     defaultValue:false
   }
 
 }, {
-  tableName: 'quejas',
+
+  tableName: 'complaints',
+
   timestamps: false
 });
 

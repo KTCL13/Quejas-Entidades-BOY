@@ -41,15 +41,15 @@ describe('Rutas de quejas', () => {
 
   describe('POST /', () => {
     it('debería crear una queja válida', async () => {
-      createQueja.mockResolvedValue({ id_queja: 1, descripcion_queja: 'Texto de prueba', id_entidad: 1 });
+      createQueja.mockResolvedValue({ id: 1, description: 'Texto de prueba', entity_id: 1 });
 
       const res = await request(app)
         .post('/')
-        .send({ texto: 'Texto de prueba', id_entidad: 1 });
+        .send({ texto: 'Texto de prueba', entity_id: 1 });
 
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty('message', 'Queja registrada');
-      expect(res.body.data).toEqual({ id_queja: 1, descripcion_queja: 'Texto de prueba', id_entidad: 1 });
+      expect(res.body.data).toEqual({ id: 1, description: 'Texto de prueba', entity_id: 1 });
     });
 
     it('debería rechazar texto corto', async () => {

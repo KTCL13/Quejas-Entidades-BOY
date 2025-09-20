@@ -3,11 +3,13 @@ const Entity= require('./Entity');
 const Complaint = require('./Complaint');
 
 Entity.hasMany(Complaint, {
-  foreignKey: 'id_entidad' 
+
+  foreignKey: 'entity_id' 
 });
 
 Complaint.belongsTo(Entity, {
-  foreignKey: 'id_entidad'
+  foreignKey: 'entity_id'
+
 });
 
 

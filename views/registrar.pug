@@ -36,13 +36,13 @@ block content
         return;
       }
 
-      const id_entidad = Number(id_entidad_val);
+      const entity_id = Number(id_entidad_val);
 
       try {
         const res = await fetch('/api/quejas', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id_entidad, texto })
+          body: JSON.stringify({ entity_id, texto })
         });
         const data = await res.json();
 
