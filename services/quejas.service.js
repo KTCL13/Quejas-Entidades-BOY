@@ -7,7 +7,9 @@ exports.getQuejasPaginadasForEntity = async (entidadId, page = 1, limit = 10) =>
     const offset = (page - 1) * limit;
 
     const { rows: quejas, count } = await Complaint.findAndCountAll({
+
       where: { entity_id: entidadId },
+
       include: [{
         model: Entity,
         attributes: ['name']
@@ -70,6 +72,7 @@ exports.createQueja = async ({ texto, entity_id }) => {
   const nuevaQueja = await Complaint.create({
     description: texto.trim(),
     entity_id
+
   });
 
   return nuevaQueja;
@@ -82,7 +85,9 @@ exports.getReporteQuejasPorEntidad = async () => {
       attributes: [
         'id',
         'name',
+
         [Complaint.sequelize.fn('COUNT', Complaint.sequelize.col('Complaints.id')), 'total_quejas']
+o
       ],
       include: [{
         model: Complaint,
