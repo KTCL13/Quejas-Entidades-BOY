@@ -1,5 +1,5 @@
 const { Complaint, Entity } = require('../models');
-const { setEntidadesCache } = require('../config/cache');
+const { setEntitiesCache } = require('../config/cache');
 
 // Obtener quejas paginadas por entidad
 exports.getQuejasPaginadasForEntity = async (entidadId, page = 1, limit = 10) => {
@@ -40,7 +40,7 @@ exports.loadEntidades = async () => {
   const entidades = await Entity.findAll({
     order: [['name', 'ASC']]
   });
-  setEntidadesCache(entidades);
+  setEntitiesCache(entidades);
 };
 
 // Obtener todas las entidades
