@@ -56,7 +56,7 @@ block content
         if (result.data && result.data.length) {
           result.data.forEach(q => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${q.descripcion_queja}</td>`;
+            tr.innerHTML = `<td>${q.description}</td>`;
             tbody.appendChild(tr);
           });
         } else {

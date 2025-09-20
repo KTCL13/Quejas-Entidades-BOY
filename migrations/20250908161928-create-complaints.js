@@ -2,23 +2,23 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('quejas', {
-      id_queja: {
+    await queryInterface.createTable('complaints', {
+      id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.BIGINT
       },
-      descripcion_queja: {
+      description: {
         type: Sequelize.TEXT,
         allowNull: false
       },
-      isDeleted_queja: {
+      is_deleted: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: false
       },
-      id_entidad: {
+      entity_id: {
         type: Sequelize.BIGINT,
         references: {
           model: 'entities',
@@ -30,6 +30,6 @@ module.exports = {
     });
   },
   async down(queryInterface) {
-    await queryInterface.dropTable('quejas');
+    await queryInterface.dropTable('complaints');
   }
 };

@@ -19,15 +19,15 @@ router.get('/registrar', async (req, res) => {
 // POST /api/quejas → crea una nueva queja
 router.post('/', async (req, res) => {
   try {
-    const { texto, id_entidad } = req.body;
+    const { texto, entity_id } = req.body;
 
     if (!texto || texto.trim().length < 10 || texto.trim().length > 2000) {
       return res.status(400).json({ error: "La queja debe tener entre 10 y 2000 caracteres." });
     }
-    if (!id_entidad || isNaN(id_entidad)) {
+    if (!entity_id || isNaN(entity_id)) {
       return res.status(400).json({ error: "Debe seleccionar una entidad válida." });
     }
-    const queja = await createQueja({ texto, id_entidad });
+    const queja = await createQueja({ texto, entity_id });
     res.status(201).json({ message: "Queja registrada", data: queja });
   } catch {
     res.status(500).json({ error: 'Error al registrar la queja.' });
