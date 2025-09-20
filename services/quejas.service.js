@@ -106,6 +106,16 @@ exports.getReporteQuejasPorEntidad = async () => {
   }
 };
 
-
-
-
+exports.deleteComplaint = async (complaintId) => {
+  try {
+    const complaint = await Complaint.findByPk(complaintId);
+    if (complaint) {
+      await complaint.update({ is_deleted: true });
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error al eliminar la queja:', error);
+    throw new Error('Error al eliminar la queja');
+  }
+};
