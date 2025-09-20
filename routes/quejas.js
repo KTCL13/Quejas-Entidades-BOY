@@ -27,7 +27,6 @@ router.post('/', async (req, res) => {
     if (!id_entidad || isNaN(id_entidad)) {
       return res.status(400).json({ error: "Debe seleccionar una entidad válida." });
     }
-
     const queja = await createQueja({ texto, id_entidad });
     res.status(201).json({ message: "Queja registrada", data: queja });
   } catch {

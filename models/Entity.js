@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database'); 
 
-const Entity = sequelize.define('Complaint', {
+const Entity = sequelize.define('Entity', {
 
   id: {
     type: DataTypes.BIGINT, 

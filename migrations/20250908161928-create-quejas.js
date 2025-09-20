@@ -18,7 +18,7 @@ module.exports = {
         allowNull: false,
         defaultValue: false
       },
-      entity_id: {
+      id_entidad: {
         type: Sequelize.BIGINT,
         references: {
           model: 'entities',
