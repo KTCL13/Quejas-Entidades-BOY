@@ -59,7 +59,7 @@ block content
             tr.innerHTML = `
               <td>${q.description}</td>
               <td>
-                <button class="btn btn-danger btn-sm" onclick="deleteQueja(${q.id_queja})">
+                <button class="btn btn-danger btn-sm" onclick="deleteComplaint(${q.id_queja})">
                   Borrar
                 </button>
               </td>
@@ -129,9 +129,9 @@ block content
         renderTable(entidadId, currentPage);
       });
 
-      async function deleteQueja(idQueja) {
+      async function deleteComplaint(complaintId) {
         try {
-          const res = await fetch(`/api/quejas/${idQueja}`, {
+          const res = await fetch(`/api/quejas/${complaintId}`, {
             method: 'DELETE',
           });
           if (res.ok) {
@@ -140,6 +140,6 @@ block content
             console.error('Error al borrar la queja:', res.statusText);
           }
         } catch (err) {
-          console.error('Error en deleteQueja:', err);
+          console.error('Error en deleteComplaint:', err);
         }
       }
