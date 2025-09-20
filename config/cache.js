@@ -1,9 +1,9 @@
-let entidadesCache = []
+let entitiesCache = []
 
-const setEntidadesCache = (data) => {
-  entidadesCache = data
+const setEntitiesCache = (data) => {
+  entitiesCache = data
 }
 
-const getEntidadesCache = () => entidadesCache
+const getEntitiesCache = () => entitiesCache
 
-module.exports = { setEntidadesCache, getEntidadesCache }
+module.exports = { setEntitiesCache, getEntitiesCache }

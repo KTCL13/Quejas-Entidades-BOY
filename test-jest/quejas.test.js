@@ -4,7 +4,7 @@ const express = require('express');
 const request = require('supertest');
 
 const router = require('../routes/quejas.js');
-const { getEntidadesCache } = require('../config/cache.js');
+const { getEntitiesCache } = require('../config/cache.js');
 const { createQueja, getQuejasPaginadasForEntity } = require('../services/quejas.service.js');
 
 const sequelize = require('../config/database');
@@ -20,7 +20,7 @@ describe('Rutas de quejas', () => {
 
   describe("GET /registrar", () => {
     it("debería renderizar con las entidades del cache", async () => {
-      getEntidadesCache.mockReturnValue([{ id_entidad: 1, nombre_entidad: "Entidad A" }]);
+      getEntitiesCache.mockReturnValue([{ id_entidad: 1, nombre_entidad: "Entidad A" }]);
 
       // mockear res.render
       const app = express();

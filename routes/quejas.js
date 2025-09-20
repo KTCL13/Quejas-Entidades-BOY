@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { getEntidadesCache } = require('../config/cache');
+const { getEntitiesCache } = require('../config/cache');
 const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad, deleteComplaint } = require('../services/quejas.service');
 const { enviarCorreo } = require('../services/email.service'); //importamos el servicio de correo email.srviece.js
 const { verifyRecaptcha } = require('../middleware/recaptcha');
@@ -9,7 +9,7 @@ const { verifyRecaptcha } = require('../middleware/recaptcha');
 // GET /registrar → renderiza el formulario con entidades
 router.get('/registrar', async (req, res) => {
   try {
-    const entidades = getEntidadesCache() || [];
+    const entidades = getEntitiesCache() || [];
     res.render('registrar', { entidades, activePage: 'registrar' });
   } catch {
     res.render('registrar', { entidades: [], activePage: 'registrar' });

@@ -2,10 +2,10 @@ var express = require('express')
 
 var router = express.Router()
 
-var getEntidadesCache = require('../config/cache').getEntidadesCache
+var { getEntitiesCache } = require('../config/cache')
 
 router.get('/', async (req, res) => {
-  const entidades = getEntidadesCache() || []
+  const entidades = getEntitiesCache() || []
   res.render('lista-quejas', {
     entidades,
     quejas: [],
