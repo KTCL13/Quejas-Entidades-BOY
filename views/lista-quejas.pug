@@ -1,145 +1,148 @@
 extends layout
 
 block content
-    .container.mt-4
-      // Selector de entidad
-      .mb-3
-        label.form-label(for="entidad") Entidad Pública
-        select.form-select#entidad(name="entidad")
-          option(value="") Seleccione una entidad...
-          each entidad in entidades
-            option(value=entidad.id) #{entidad.name}
+  .container.mt-4
+    // Selector de entidad
+    .mb-3
+      label.form-label(for="entidad") Entidad Pública
+      select.form-select#entidad(name="entidad")
+        option(value="") Seleccione una entidad...
+        each entidad in entidades
+          option(value=entidad.id) #{entidad.name}
 
-      // Tabla de quejas
-      table.table.table-bordered
-        thead.table-secondary
-          tr
-            th Quejas
-            th Acciones
-        tbody
+    // Tabla de quejas
+    table.table.table-bordered
+      thead.table-secondary
+        tr
+          th Quejas
+          th Acciones
+      tbody
 
-      // Controles de paginación
-      nav.mt-3
-        ul.pagination.justify-content-center#pagination
-    script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js")
-    script.
-      let currentPage = 1;
-      const rowsPerPage = 10; 
-      let currentEntidad = null;
 
-      const tbody = document.querySelector('table tbody');
-      const pagination = document.getElementById('pagination');
-    
-      async function fetchQuejas(entidadId, page = 1, limit = rowsPerPage) {
-        return new Promise((resolve, reject) => {
-          grecaptcha.ready(function() {
-            grecaptcha.execute('6LeBKKkrAAAAAObCxLb511gIotGRecWMZZOEZhRg', { action: 'submit' })
-              .then(async function(token) {
-                try {
-                  const res = await fetch(`/api/quejas?entidadId=${entidadId}&page=${page}&limit=${limit}`, {
-                    headers: {
-                      'X-Recaptcha-Token': token  
-                    }
-                  });
-                  const data = await res.json();
-                  resolve(data);
-                } catch (err) {
-                  reject(err);
-                }
-              });
-          });
+    // Controles de paginación
+    nav.mt-3
+      ul.pagination.justify-content-center#pagination
+  script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js")
+  script.
+    let currentPage = 1;
+    const rowsPerPage = 10; 
+    let currentEntidad = null;
+
+
+    const tbody = document.querySelector('table tbody');
+    const pagination = document.getElementById('pagination');
+
+    async function fetchQuejas(entidadId, page = 1, limit = rowsPerPage) {
+      return new Promise((resolve, reject) => {
+        grecaptcha.ready(function() {
+          grecaptcha.execute('6LeBKKkrAAAAAObCxLb511gIotGRecWMZZOEZhRg', { action: 'submit' })
+            .then(async function(token) {
+              try {
+                const res = await fetch(`/api/quejas?entidadId=${entidadId}&page=${page}&limit=${limit}`, {
+                  headers: {
+                    'X-Recaptcha-Token': token  
+                  }
+                });
+                const data = await res.json();
+                resolve(data);
+              } catch (err) {
+                reject(err);
+              }
+            });
         });
-      }
-      async function renderTable(entidadId, page = 1) {
-        const result = await fetchQuejas(entidadId, page, rowsPerPage);
-        tbody.innerHTML = '';
-        if (result.data && result.data.length) {
-          result.data.forEach(q => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td>${q.description}</td>
-              <td>
-                <button class="btn btn-danger btn-sm" onclick="deleteComplaint(${q.id_queja})">
-                  Borrar
-                </button>
-              </td>
-            `;
-            tbody.appendChild(tr);
-          });
-        } else {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td class="text-center" colspan="2">No hay quejas registradas</td>`;
-          tbody.appendChild(tr);
-        }
-
-        renderPagination(result.totalPages, result.page);
-      }
-
-      function renderPagination(totalPages, page) {
-        pagination.innerHTML = '';
-
-        if (totalPages <= 1) return;
-
-        // Botón anterior
-        const prev = document.createElement('li');
-        prev.className = 'page-item ' + (page === 1 ? 'disabled' : '');
-        prev.innerHTML = `<a class="page-link" href="#">Anterior</a>`;
-        prev.addEventListener('click', (e) => {
-          e.preventDefault();
-          if (page > 1) {
-            currentPage--;
-            renderTable(currentEntidad, currentPage);
-          }
-        });
-        pagination.appendChild(prev);
-
-        // Números de página
-        for (let i = 1; i <= totalPages; i++) {
-          const li = document.createElement('li');
-          li.className = 'page-item ' + (i === page ? 'active' : '');
-          li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-          li.addEventListener('click', (e) => {
-            e.preventDefault();
-            currentPage = i;
-            renderTable(currentEntidad, currentPage);
-          });
-          pagination.appendChild(li);
-        }
-
-        // Botón siguiente
-        const next = document.createElement('li');
-        next.className = 'page-item ' + (page === totalPages ? 'disabled' : '');
-        next.innerHTML = `<a class="page-link" href="#">Siguiente</a>`;
-        next.addEventListener('click', (e) => {
-          e.preventDefault();
-          if (page < totalPages) {
-            currentPage++;
-            renderTable(currentEntidad, currentPage);
-          }
-        });
-        pagination.appendChild(next);
-      }
-
-      // Evento al seleccionar entidad
-      document.getElementById('entidad').addEventListener('change', function() {
-        const entidadId = this.value;
-        if (!entidadId) return;
-        currentEntidad = entidadId;
-        currentPage = 1;
-        renderTable(entidadId, currentPage);
       });
-
-      async function deleteComplaint(complaintId) {
-        try {
-          const res = await fetch(`/api/quejas/${complaintId}`, {
-            method: 'DELETE',
-          });
-          if (res.ok) {
-            renderTable(currentEntidad, currentPage);
-          } else {
-            console.error('Error al borrar la queja:', res.statusText);
-          }
-        } catch (err) {
-          console.error('Error en deleteComplaint:', err);
-        }
+    }
+    async function renderTable(entidadId, page = 1) {
+      const result = await fetchQuejas(entidadId, page, rowsPerPage);
+      tbody.innerHTML = '';
+      if (result.data && result.data.length) {
+        result.data.forEach(q => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${q.description}</td>
+            <td>
+              <button class="btn btn-danger btn-sm" onclick="deleteComplaint(${q.id})">
+            Borrar
+        </button>
+            </td>
+          `;
+          
+          tbody.appendChild(tr);
+        });
+      } else {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class="text-center" colspan="2">No hay quejas registradas</td>`;
+        tbody.appendChild(tr);
       }
+
+      renderPagination(result.totalPages, result.page);
+    }
+
+    function renderPagination(totalPages, page) {
+      pagination.innerHTML = '';
+
+      if (totalPages <= 1) return;
+
+      // Botón anterior
+      const prev = document.createElement('li');
+      prev.className = 'page-item ' + (page === 1 ? 'disabled' : '');
+      prev.innerHTML = `<a class="page-link" href="#">Anterior</a>`;
+      prev.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (page > 1) {
+          currentPage--;
+          renderTable(currentEntidad, currentPage);
+        }
+      });
+      pagination.appendChild(prev);
+
+      // Números de página
+      for (let i = 1; i <= totalPages; i++) {
+        const li = document.createElement('li');
+        li.className = 'page-item ' + (i === page ? 'active' : '');
+        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+        li.addEventListener('click', (e) => {
+          e.preventDefault();
+          currentPage = i;
+          renderTable(currentEntidad, currentPage);
+        });
+        pagination.appendChild(li);
+      }
+
+      // Botón siguiente
+      const next = document.createElement('li');
+      next.className = 'page-item ' + (page === totalPages ? 'disabled' : '');
+      next.innerHTML = `<a class="page-link" href="#">Siguiente</a>`;
+      next.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (page < totalPages) {
+          currentPage++;
+          renderTable(currentEntidad, currentPage);
+        }
+      });
+      pagination.appendChild(next);
+    }
+
+    // Evento al seleccionar entidad
+    document.getElementById('entidad').addEventListener('change', function() {
+      const entidadId = this.value;
+      if (!entidadId) return;
+      currentEntidad = entidadId;
+      currentPage = 1;
+      renderTable(entidadId, currentPage);
+    });
+
+    async function deleteComplaint(complaintId) {
+      try {
+        const res = await fetch(`/api/complaints/${complaintId}`, {
+          method: 'DELETE',
+        });
+        if (res.ok) {
+          renderTable(currentEntidad, currentPage);
+        } else {
+          console.error('Error al borrar la queja:', res.statusText);
+        }
+      } catch (err) {
+        console.error('Error en deleteComplaint:', err);
+      }
+    }
