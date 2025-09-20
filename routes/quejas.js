@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { getEntidadesCache } = require('../config/cache');
-const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad } = require('../services/quejas.service');
+const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad, deleteComplaint } = require('../services/quejas.service');
 const { enviarCorreo } = require('../services/email.service'); //importamos el servicio de correo email.srviece.js
 const { verifyRecaptcha } = require('../middleware/recaptcha');
 
@@ -88,11 +88,37 @@ router.delete('/:id', async (req, res) => {
       return res.status(400).json({ error: 'ID de queja inválido.' });
     }
 
-    // Aquí iría la lógica para eliminar la queja de la base de datos
+    if (!await checkAdminPass(req)) {
+      return res.status(401).json({ error: 'Acceso denegado. Credenciales inválidas.' });
+    }
+
+    if (await handleDeleteComplaint(complaintId)) {
+      res.json({ message: 'Queja eliminada correctamente.' });
+    } else {
+      res.status(404).json({ error: 'Queja no encontrada.' });
+    }
   } catch {
     res.status(500).json({ error: 'Error al eliminar la queja.' });
   }
 });
+
+async function handleDeleteComplaint(complaintId) {
+  try {
+    const result = await deleteComplaint(complaintId);
+    return result > 0;
+  } catch (error) {
+    console.error('Error al eliminar la queja:', error);
+    throw new Error('Error al eliminar la queja');
+  }
+}
+
+async function checkAdminPass(req) {
+  const adminPass = req.headers['x-admin-pass'];
+  if (adminPass !== process.env.ADMIN_PASS) {
+    return false;
+  }
+  return true;
+}
 
 // GET /api/quejas/quejas-por-entidad → reporte
 router.get('/quejas-por-entidad', async (req, res) => {
