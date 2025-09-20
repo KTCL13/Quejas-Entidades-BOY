@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
-const Queja = sequelize.define('Queja', {
+const Complaint = sequelize.define('Complaint', {
 
   id_queja: {
     type: DataTypes.BIGINT,
@@ -25,4 +25,4 @@ const Queja = sequelize.define('Queja', {
   timestamps: false
 });
 
-module.exports = Queja;
+module.exports = Complaint;

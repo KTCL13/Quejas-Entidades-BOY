@@ -1,4 +1,4 @@
-const { Queja, Entity } = require('../models');
+const { Complaint, Entity } = require('../models');
 const { setEntidadesCache } = require('../config/cache');
 
 // Obtener quejas paginadas por entidad
@@ -6,7 +6,7 @@ exports.getQuejasPaginadasForEntity = async (entidadId, page = 1, limit = 10) =>
   try {
     const offset = (page - 1) * limit;
 
-    const { rows: quejas, count } = await Queja.findAndCountAll({
+    const { rows: quejas, count } = await Complaint.findAndCountAll({
       where: { id_entidad: entidadId },
       include: [{
         model: Entity,
@@ -65,7 +65,7 @@ exports.createQueja = async ({ texto, id_entidad }) => {
   }
 
 
-  const nuevaQueja = await Queja.create({
+  const nuevaQueja = await Complaint.create({
     descripcion_queja: texto.trim(),
     id_entidad
   });
@@ -80,14 +80,14 @@ exports.getReporteQuejasPorEntidad = async () => {
       attributes: [
         'id',
         'name',
-        [Queja.sequelize.fn('COUNT', Queja.sequelize.col('Quejas.id_queja')), 'total_quejas']
+        [Complaint.sequelize.fn('COUNT', Complaint.sequelize.col('Complaints.id_queja')), 'total_quejas']
       ],
       include: [{
-        model: Queja,
+        model: Complaint,
         attributes: []
       }],
       group: ['Entity.id'],
-      order: [[Queja.sequelize.literal('total_quejas'), 'DESC']]
+      order: [[Complaint.sequelize.literal('total_quejas'), 'DESC']]
     });
     return res;
   } catch (err) {
