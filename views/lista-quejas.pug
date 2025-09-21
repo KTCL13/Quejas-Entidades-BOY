@@ -7,8 +7,8 @@ block content
       label.form-label(for="entidad") Entidad Pública
       select.form-select#entidad(name="entidad")
         option(value="") Seleccione una entidad...
-        each entidad in entidades
-          option(value=entidad.id) #{entidad.name}
+        each entity in entities
+          option(value=entity.id) #{entity.name}
 
     // Tabla de quejas
     table.table.table-bordered
