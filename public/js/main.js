@@ -124,7 +124,7 @@ document.getElementById("entidad").addEventListener("change", function () {
   renderTable(entidadId, currentPage);
 });
 
-// ✅ Confirmar borrado
+
 confirmDeleteBtn.addEventListener("click", async () => {
   const password = deletePasswordInput.value;
   if (!password) {
@@ -144,14 +144,14 @@ confirmDeleteBtn.addEventListener("click", async () => {
     if (res.ok) {
       deleteModal.hide();
       renderTable(currentEntidad, currentPage);
-      showAlert("Queja eliminada con éxito ✅", "success");
+      showAlert("Queja eliminada con éxito ", "success");
     } else {
       const err = await res.json();
-      showAlert(err.error || "Error al borrar la queja ❌", "danger");
+      showAlert(err.error || "Error al borrar la queja ", "danger");
     }
   } catch (err) {
     console.error("Error en deleteComplaint:", err);
-    showAlert("Error de conexión al borrar la queja ❌", "danger");
+    showAlert("Error de conexión al borrar la queja ", "danger");
   }
 });
 
