@@ -5,7 +5,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var listaQuejasRouter = require('./routes/listaQuejas');
+var listaQuejasRouter = require('./routes/complaintsList');
 var quejasRouter = require('./routes/quejas');
 var reportesRouter = require('./routes/reportes');
 const { loadEntidades } = require('./services/quejas.service');

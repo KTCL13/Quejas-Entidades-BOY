@@ -5,16 +5,14 @@ var router = express.Router()
 var { getEntitiesCache } = require('../config/cache')
 
 router.get('/', async (req, res) => {
-  const entidades = getEntitiesCache() || []
+  const entities = getEntitiesCache() || []
   res.render('lista-quejas', {
-    entidades,
-    quejas: [],
-    paginas: [],
-    paginaActual: 1,
+    entities,
+    complaints: [],
+    pages: [],
+    currentPage: 1,
     activePage: 'lista'
   })
 })
-
-
 
 module.exports = router
