@@ -42,12 +42,13 @@ block content
     let currentPage = 1;
     const rowsPerPage = 10; 
     let currentEntidad = null;
-    let complaintToDelete = null; // Para guardar el ID de la queja a borrar
+    let complaintToDelete = null;
 
     const tbody = document.querySelector('table tbody');
     const pagination = document.getElementById('pagination');
     const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
     const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    const deletePasswordInput = document.getElementById('deletePassword');
 
     async function fetchQuejas(entidadId, page = 1, limit = rowsPerPage) {
       return new Promise((resolve, reject) => {
@@ -152,32 +153,33 @@ block content
     // Abrir modal y guardar ID de la queja
     function openDeleteModal(complaintId) {
       complaintToDelete = complaintId;
-      document.getElementById('deletePassword').value = ''; // limpiar input
+      deletePasswordInput.value = ''; // limpiar input
       deleteModal.show();
     }
 
     // Confirmar borrado
     confirmDeleteBtn.addEventListener('click', async () => {
-      const password = document.getElementById('deletePassword').value;
+      const password = deletePasswordInput.value;
       if (!password) {
         alert('Por favor ingrese la contraseña.');
         return;
       }
 
       try {
-        const res = await fetch(`/api/complaints/${complaintToDelete}`, {
+        const res = await fetch(`/api/quejas/${complaintToDelete}`, {
           method: 'DELETE',
           headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ password })
+            'Content-Type': 'application/json',
+            'x-admin-pass': password
+          }
         });
 
         if (res.ok) {
           deleteModal.hide();
           renderTable(currentEntidad, currentPage);
         } else {
-          alert('Error al borrar la queja.');
+          const err = await res.json();
+          alert(err.error || 'Error al borrar la queja.');
         }
       } catch (err) {
         console.error('Error en deleteComplaint:', err);
