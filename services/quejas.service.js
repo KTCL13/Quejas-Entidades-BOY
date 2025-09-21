@@ -70,12 +70,9 @@ exports.createQueja = async ({ texto, entity_id }) => {
     throw new Error('La entidad especificada no existe');
   }
 
-
-
   const nuevaQueja = await Complaint.create({
     description: texto.trim(),
     entity_id
-
   });
 
   return nuevaQueja;

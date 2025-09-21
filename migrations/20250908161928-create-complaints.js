@@ -1,4 +1,7 @@
 'use strict';
+
+const COMPLAINT_STATES= require('../config/constants');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -13,6 +16,13 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false
       },
+
+      state: {
+        type: Sequelize.ENUM(...Object.values(COMPLAINT_STATES)),
+        allowNull: false,
+        defaultValue: COMPLAINT_STATES.IN_PROGRESS
+      },
+
       is_deleted: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
