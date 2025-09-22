@@ -10,4 +10,12 @@ exports.getCommentsByComplaintId = async (complaintId) => {
   }
 };
 
-
+exports.createCommentByComplaintId = async (complaintId, message) => {
+  try {
+    const newComment = await Comment.create({ complaint_id: complaintId, message });
+    return newComment;
+  } catch (error) {
+    console.error('Error al crear comentario:', error);
+    throw error;
+  }
+};
