@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { getCommentsByComplaintId } = require('../services/comment.service');
 
-//Get /api/comments-complaint-id/:id
-router.get('/complaint-id/:id', async (req, res) => {
+//Get /api/complaint/:id
+router.get('/complaint/:id', async (req, res) => {
   const complaintId = req.params.id;
   if (!isNaN(complaintId)) {
     var comments = await getCommentsByComplaintId(complaintId);
