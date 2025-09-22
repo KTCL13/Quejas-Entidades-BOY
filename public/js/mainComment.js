@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function loadComments() {
     try {
-      const res = await fetch(`/api/commentaries-queja/${complaintId}`);
+      const res = await fetch(`/api/comments-complaint-id/${complaintId}`);
       const comments = await res.json();
 
       container.innerHTML = "";
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const item = document.createElement("div");
         item.className = "list-group-item d-flex justify-content-between";
         item.innerHTML = `
-          <span>${comment.description}</span>
+          <span>${comment.message}</span>
           <small class="text-muted">Fecha: ${comment.date}</small>
         `;
         container.appendChild(item);
@@ -36,10 +36,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!text) return;
 
     try {
-      await fetch(`/api/commentaries-queja/${complaintId}`, {
+      await fetch(`/api/comments-complaint-id/${complaintId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ description: text })
+        body: JSON.stringify({ message: text })
       });
 
       input.value = "";
