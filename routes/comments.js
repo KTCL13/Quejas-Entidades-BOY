@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getCommentsByComplaintId } = require('../services/comment.service');
+const { getCommentsByComplaintId, createCommentByComplaintId } = require('../services/comment.service');
 
 //Get /api/complaint/:id
 router.get('/complaint/:id', async (req, res) => {
@@ -13,6 +13,17 @@ router.get('/complaint/:id', async (req, res) => {
   }
 });
 
+
+router.post('/complaint/:id', async (req, res) => {
+  const complaintId = req.params.id;
+  const { message } = req.body;
+  if (!isNaN(complaintId) && message) {
+    await createCommentByComplaintId(complaintId, message);
+    res.status(201).send('Comentario agregado');
+  } else {
+    res.status(400).send('ID de queja inválido o contenido vacío');
+  }
+});
 
 
 module.exports = router;
