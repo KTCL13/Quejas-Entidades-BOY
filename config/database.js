@@ -1,23 +1,15 @@
-const { Sequelize } = require('sequelize');
-require('dotenv').config();
+const { Sequelize } = require("sequelize");
 
-// Define las opciones de conexión base
 const options = {
-  dialect: 'postgres',
   logging: false
 };
 
-// Lógica condicional para SSL en producción
-if (process.env.NODE_ENV === 'production') {
-  options.dialectOptions = {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false
-    }
-  };
+let sequelize;
+if (process.env.NODE_ENV === "test") {
+  // 🔹 Base de datos en memoria solo para pruebas
+  sequelize = new Sequelize("sqlite::memory:", options);
+} else {
+  sequelize = new Sequelize(process.env.DATABASE_URL, options);
 }
-
-// Crea y EXPORTA la instancia, pero NO te conectes aquí
-const sequelize = new Sequelize(process.env.DATABASE_URL, options);
 
 module.exports = sequelize;
