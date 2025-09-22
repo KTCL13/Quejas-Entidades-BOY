@@ -40,7 +40,6 @@ html(lang="es")
 
           // Comentarios dinámicos
           h6.fw-bold Comentarios
-          // Aquí se insertarán los comentarios con JS
           .list-group.mb-3#comments-container
 
           // Agregar comentario
@@ -48,7 +47,7 @@ html(lang="es")
             input.form-control#new-comment(type="text" placeholder="Escribe un comentario...")
             button.btn.btn-primary#add-comment(type="button") Agregar comentario
 
-    
+    // === Modal Caso 1.2.1: Cambiar Estado ===
     .modal.fade#changeStateModal(tabindex='-1' aria-hidden='true')
       .modal-dialog.modal-dialog-centered
         .modal-content
@@ -57,16 +56,8 @@ html(lang="es")
             button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
           .modal-body
             form#formChangeState
-              .mb-3
-                .form-check
-                  input.form-check-input#state_in_process(type='radio' name='newState' value='En proceso')
-                  label.form-check-label(for='state_in_process') En proceso
-                .form-check
-                  input.form-check-input#state_in_review(type='radio' name='newState' value='En revisión')
-                  label.form-check-label(for='state_in_review') En revisión
-                .form-check
-                  input.form-check-input#state_closed(type='radio' name='newState' value='Cerrado')
-                  label.form-check-label(for='state_closed') Cerrada
+              .mb-3#statesContainer
+                // Radios se cargarán dinámicamente con JS desde /api/quejas/data/states
               .mb-3
                 label.form-label(for='adminPassword') Ingrese contraseña de administrador
                 input#adminPassword.form-control(type='password' placeholder='Contraseña' required)
@@ -79,7 +70,7 @@ html(lang="es")
     script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js")
     script(src="/js/mainComment.js")
 
-
+    // === Script embebido para manejar el modal ===
     script.
       document.addEventListener("DOMContentLoaded", () => {
         const btnOpen = document.getElementById("btnChangeState");
@@ -88,23 +79,51 @@ html(lang="es")
         const adminPasswordInput = document.getElementById("adminPassword");
         const complaintIdInput = document.getElementById("complaintId");
         const currentStateEl = document.getElementById("currentState");
+        const statesContainer = document.getElementById("statesContainer");
 
         if (!btnOpen || !modalEl || !submitBtn) return;
 
         const bsModal = new bootstrap.Modal(modalEl, { keyboard: true });
 
+        // Abrir modal y cargar estados dinámicamente
+        btnOpen.addEventListener("click", async () => {
+          statesContainer.innerHTML = "<div class='text-muted'>Cargando estados...</div>";
+          try {
+            const res = await fetch("/api/quejas/data/states");
+            if (!res.ok) throw new Error("No se pudieron obtener los estados");
+            const states = await res.json(); // array de strings
 
-        btnOpen.addEventListener("click", () => {
-          const cur = currentStateEl && currentStateEl.textContent.trim();
-          if (cur) {
-            const radio = Array.from(document.querySelectorAll('input[name="newState"]')).find(r => r.value === cur);
-            if (radio) radio.checked = true;
+            statesContainer.innerHTML = "";
+            states.forEach((state, idx) => {
+              const div = document.createElement("div");
+              div.classList.add("form-check");
+              div.innerHTML = `
+                <input class="form-check-input" type="radio" 
+                       name="newState" id="state_${idx}" value="${state}">
+                <label class="form-check-label" for="state_${idx}">
+                  ${state}
+                </label>`;
+              statesContainer.appendChild(div);
+            });
+
+            // marcar estado actual como seleccionado
+            const cur = currentStateEl && currentStateEl.textContent.trim();
+            if (cur) {
+              const radio = Array.from(document.querySelectorAll('input[name="newState"]'))
+                .find(r => r.value === cur);
+              if (radio) radio.checked = true;
+            }
+
+          } catch (err) {
+            console.error("Error cargando estados:", err);
+            statesContainer.innerHTML = `<div class="text-danger">Error cargando estados</div>`;
           }
+
           adminPasswordInput.value = "";
           bsModal.show();
         });
 
-
+        // Alertita temporal
         function showTempAlert(message, type = "info") {
           const existing = document.getElementById("tempAlertChangeState");
           if (existing) existing.remove();
@@ -117,7 +136,7 @@ html(lang="es")
           setTimeout(() => alert.remove(), 2500);
         }
 
-
+        // Enviar cambio de estado
         submitBtn.addEventListener("click", async () => {
           const selected = document.querySelector('input[name="newState"]:checked');
           if (!selected) {
