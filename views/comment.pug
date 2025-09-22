@@ -32,23 +32,20 @@ html(lang="es")
               |  #{complaint.state}
             button.btn.btn-outline-dark.btn-sm Cambiar estado
 
-          // Texto de la queja (usa description en lugar de texto)
+          // Texto de la queja
           .mb-4
             label.form-label.fw-bold(for="textoQueja") Texto de la queja
             textarea#textoQueja.form-control(rows="4" readonly)= complaint.description
 
-          // Comentarios
+          // Comentarios dinámicos
           h6.fw-bold Comentarios
-          .list-group.mb-3
-            each comment in complaint.comments
-              .list-group-item.d-flex.justify-content-between
-                span= comment.description
-                small.text-muted Fecha: #{comment.date}
+          // Aquí se insertarán los comentarios con JS
+          .list-group.mb-3#comments-container
 
           // Agregar comentario
           .input-group
-            input.form-control(type="text" placeholder="Escribe un comentario...")
-            button.btn.btn-primary(type="button") Agregar comentario
-
+            input.form-control#new-comment(type="text" placeholder="Escribe un comentario...")
+            button.btn.btn-primary#add-comment(type="button") Agregar comentario
 
     script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js")
+    script(src="/js/mainComment.js")
