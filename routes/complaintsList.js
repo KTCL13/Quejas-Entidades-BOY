@@ -21,7 +21,7 @@ router.get('/complaint/:id', async (req, res) => {
   const complaint = {
     id,
     entities: "Entidad X",
-    estate: "Pendiente",
+    state: "Pendiente",
     description: "Texto de la queja...",
     comments: [
     ]
