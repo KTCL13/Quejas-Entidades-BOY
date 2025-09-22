@@ -25,7 +25,7 @@ class NodemailerService extends IMailService {
    * @param {import('../interfaces/IMailService').MailOptions} options
    * @returns {Promise<any>}
    */
-  async enviar({ to, subject, text, html }) {
+  async sendMail({ to, subject, text, html }) {
     try {
       const info = await this.#transporter.sendMail({
         from: `"Quejas Boyacá" <${process.env.EMAIL_USER}>`, 
