@@ -4,19 +4,15 @@ const express = require("express");
 const request = require("supertest");
 process.env.ADMIN_PASS = "admin123";
 
-
 const router = require("../routes/quejas.js");
 const { getEntitiesCache } = require("../config/cache.js");
 const { createQueja, getQuejasPaginadasForEntity, deleteComplaint } = require("../services/quejas.service.js");
 
 const sequelize = require("../config/database");
 
-// Mocks
+
 jest.mock("../config/cache.js");
 jest.mock("../services/quejas.service.js");
-jest.mock("../services/email.service.js", () => ({
-  enviarCorreo: jest.fn().mockResolvedValue(true),
-}));
 
 const app = express();
 app.use(express.json());
