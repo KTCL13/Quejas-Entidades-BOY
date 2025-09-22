@@ -103,6 +103,7 @@ exports.getReporteQuejasPorEntidad = async () => {
   }
 };
 
+
 exports.deleteComplaint = async (complaintId) => {
   try {
     const complaint = await Complaint.findByPk(complaintId);
@@ -114,5 +115,22 @@ exports.deleteComplaint = async (complaintId) => {
   } catch (error) {
     console.error('Error al eliminar la queja:', error);
     throw new Error('Error al eliminar la queja');
+  }
+};
+
+
+exports.changeComplaintState = async (complaintId, newState) => {
+  try {
+    const complaint = await Complaint.findByPk(complaintId);
+    if (complaint) {
+      complaint.state = newState;
+      await complaint.save();
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error('Error al cambiar el estado de la queja:', error);
+    throw new Error('Error al cambiar el estado de la queja');
   }
 };
