@@ -5,7 +5,7 @@ const request = require('supertest');
 
 const router = require('../routes/quejas.js');
 const { getEntitiesCache } = require('../config/cache.js');
-const { createQueja, getQuejasPaginadasForEntity } = require('../services/quejas.service.js');
+const { createQueja, getQuejasPaginadasForEntity, deleteQueja } = require('../services/quejas.service.js');
 
 const sequelize = require('../config/database');
 
@@ -22,11 +22,10 @@ describe('Rutas de quejas', () => {
     it("debería renderizar con las entidades del cache", async () => {
       getEntitiesCache.mockReturnValue([{ id_entidad: 1, nombre_entidad: "Entidad A" }]);
 
-      // mockear res.render
       const app = express();
       app.use((req, res, next) => {
         res.render = jest.fn((view, options) => {
-          res.json({ view, options }); // para poder verificar
+          res.json({ view, options });
         });
         next();
       });
@@ -38,6 +37,7 @@ describe('Rutas de quejas', () => {
       expect(res.body.options.entidades).toEqual([{ id_entidad: 1, nombre_entidad: "Entidad A" }]);
     });
   });
+
 
   describe('POST /', () => {
     it('debería crear una queja válida', async () => {
@@ -71,6 +71,7 @@ describe('Rutas de quejas', () => {
     });
   });
 
+
   describe('GET /', () => {
     it('debería retornar error si no hay entidadId', async () => {
       const res = await request(app).get('/');
@@ -96,6 +97,40 @@ describe('Rutas de quejas', () => {
         data: [{ id_queja: 1, descripcion_queja: 'Queja test', id_entidad: 1 }],
         totalPages: 1
       });
+    });
+  });
+
+ 
+  describe("DELETE /:id", () => {
+    it("debería eliminar una queja con la contraseña correcta (200)", async () => {
+      deleteQueja.mockResolvedValue(true);
+
+      const res = await request(app)
+        .delete("/1")
+        .send({ password: process.env.ADMIN_PASSWORD });
+
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("message", "Queja eliminada con éxito");
+    });
+
+    it("debería devolver 401 si la contraseña es incorrecta", async () => {
+      const res = await request(app)
+        .delete("/1")
+        .send({ password: "clave_invalida" });
+
+      expect(res.status).toBe(401);
+      expect(res.body).toHaveProperty("error", "Contraseña incorrecta");
+    });
+
+    it("debería devolver 404 si la queja no existe", async () => {
+      deleteQueja.mockResolvedValue(false);
+
+      const res = await request(app)
+        .delete("/9999")
+        .send({ password: process.env.ADMIN_PASSWORD });
+
+      expect(res.status).toBe(404);
+      expect(res.body).toHaveProperty("error", "Queja no encontrada");
     });
   });
 });
