@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { getEntitiesCache } = require('../config/cache');
-const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad, deleteComplaint, changeComplaintState } = require('../services/quejas.service');
+const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad, deleteComplaint, changeComplaintState, getComplaintById} = require('../services/quejas.service');
 const { enviarCorreo } = require('../services/email.service'); //importamos el servicio de correo email.srviece.js
 const { verifyRecaptcha } = require('../middleware/recaptcha');
 
@@ -156,5 +156,28 @@ router.put('/change-state/:id', async (req, res) => {
     res.status(500).json({ error: 'Error al cambiar el estado de la queja.', details: err.message });
   }
 });
+
+
+//GET /api/complaints/:id
+router.get('/:id', async (req, res) => {
+  try {
+    const complaintId = parseInt(req.params.id, 10);
+    if (isNaN(complaintId)) {
+      return res.status(400).json({ error: 'ID de queja inválido.' });
+    }
+
+    const complaint = await getComplaintById(complaintId);
+    if (complaint) {
+      res.json(complaint);
+    } else {
+      res.status(404).json({ error: 'Queja no encontrada.' });
+    }
+  } catch (err) {
+    console.error('Error en /api/complaints/:id:', err.message || err);
+    res.status(500).json({ error: 'Error al obtener la queja.', details: err.message });
+  }
+});
+
+
 
 module.exports = router;
