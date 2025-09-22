@@ -12,12 +12,16 @@ const Comment = sequelize.define('Comment', {
   message: {
     type: DataTypes.STRING,
     allowNull: false
-  }
+  },
+
+  created_at: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
+  },
 
 }, {
-
   tableName: 'comments',
-  timestamps: true 
+  timestamps: false 
 });
 
 module.exports = Comment;
