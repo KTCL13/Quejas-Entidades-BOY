@@ -3,8 +3,8 @@ const router = express.Router();
 
 const { getEntitiesCache } = require('../config/cache');
 const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad, deleteComplaint, changeComplaintState, getComplaintById, getComplaintStates} = require('../services/quejas.service');
-const { enviarCorreo } = require('../services/email.service'); //importamos el servicio de correo email.srviece.js
 const { verifyRecaptcha } = require('../middleware/recaptcha');
+const mailService = require('../services/nodemailer.service'); 
 
 // GET /registrar → renderiza el formulario con entidades
 router.get('/registrar', async (req, res) => {
@@ -57,23 +57,28 @@ async function obtenerQuejas(req, res) {
         return res.status(403).json({ error: 'Fallo la verificación de reCAPTCHA.' });
       }
     }
-    // 🔹 Metadatos para el correo
-    const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-    // Enviar correo de notificación
-    await enviarCorreo({
-      from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_TO,
-      subject: "Consulta de lista de quejas",
-      text: `Un usuario consultó la lista de quejas (entidadId=${entidadId}) desde la IP: ${clientIp}`
-    });
-
-    // 🔹 Obtener datos de quejas
-
+    await sendNotificationEmail(entidadId);
+    
     const result = await getQuejasPaginadasForEntity(entidadId, page, limit);
     res.json(result);
   } catch {
     res.status(500).json({ error: 'Error al obtener las quejas.' });
+  }
+}
+
+
+async function sendNotificationEmail(entityId) {
+  try {
+    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    await mailService.sendMail({
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_TO,
+      subject: "Consulta de lista de quejas",
+      text: `Un usuario consultó la lista de quejas (entidadId=${entityId}) desde la IP: ${clientIp}`
+    });
+  } catch (error) {
+    console.error('Error al enviar el correo de notificación:', error);
   }
 }
 
