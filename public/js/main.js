@@ -43,6 +43,7 @@ async function renderTable(entidadId, page = 1) {
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${q.description}</td>
+        <td>${q.state}</td>
         <td>
           <button class="btn btn-danger btn-sm btn-delete" data-id="${q.id}">
             Borrar
