@@ -1,18 +1,36 @@
-var express = require('express')
+var express = require('express');
+var router = express.Router();
 
-var router = express.Router()
+var { getEntitiesCache } = require('../config/cache');
 
-var { getEntitiesCache } = require('../config/cache')
-
+// Listado de quejas
 router.get('/', async (req, res) => {
-  const entities = getEntitiesCache() || []
+  const entities = getEntitiesCache() || [];
   res.render('lista-quejas', {
     entities,
     complaints: [],
     pages: [],
     currentPage: 1,
     activePage: 'lista'
-  })
-})
+  });
+});
 
-module.exports = router
+router.get('/complaint/:id', async (req, res) => {
+  const { id } = req.params;
+
+  const complaint = {
+    id,
+    entities: "Entidad X",
+    state: "Pendiente",
+    description: "Texto de la queja...",
+    comments: [
+    ]
+  };
+
+  res.render('comment', {
+    complaint,
+    activePage: 'detalle'
+  });
+});
+
+module.exports = router;
