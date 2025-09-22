@@ -20,7 +20,7 @@ html(lang="es")
             li.nav-item
               a.nav-link(href="#") Número de quejas por entidad
 
-    // Contenido
+
     .container.my-4
       .card.shadow
         .card-body
@@ -33,21 +33,21 @@ html(lang="es")
               span#currentState #{complaint.state}
             button.btn.btn-outline-dark.btn-sm#btnChangeState Cambiar estado
 
-          // Texto de la queja
+
           .mb-4
             label.form-label.fw-bold(for="textoQueja") Texto de la queja
             textarea#textoQueja.form-control(rows="4" readonly)= complaint.description
 
-          // Comentarios dinámicos
+
           h6.fw-bold Comentarios
           .list-group.mb-3#comments-container
 
-          // Agregar comentario
+
           .input-group
             input.form-control#new-comment(type="text" placeholder="Escribe un comentario...")
             button.btn.btn-primary#add-comment(type="button") Agregar comentario
 
-    // === Modal Caso 1.2.1: Cambiar Estado ===
+
     .modal.fade#changeStateModal(tabindex='-1' aria-hidden='true')
       .modal-dialog.modal-dialog-centered
         .modal-content
@@ -70,7 +70,7 @@ html(lang="es")
     script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js")
     script(src="/js/mainComment.js")
 
-    // === Script embebido para manejar el modal ===
+
     script.
       document.addEventListener("DOMContentLoaded", () => {
         const btnOpen = document.getElementById("btnChangeState");
@@ -85,13 +85,13 @@ html(lang="es")
 
         const bsModal = new bootstrap.Modal(modalEl, { keyboard: true });
 
-        // Abrir modal y cargar estados dinámicamente
+
         btnOpen.addEventListener("click", async () => {
           statesContainer.innerHTML = "<div class='text-muted'>Cargando estados...</div>";
           try {
             const res = await fetch("/api/quejas/data/states");
             if (!res.ok) throw new Error("No se pudieron obtener los estados");
-            const states = await res.json(); // array de strings
+            const states = await res.json();
 
             statesContainer.innerHTML = "";
             states.forEach((state, idx) => {
@@ -106,7 +106,7 @@ html(lang="es")
               statesContainer.appendChild(div);
             });
 
-            // marcar estado actual como seleccionado
+
             const cur = currentStateEl && currentStateEl.textContent.trim();
             if (cur) {
               const radio = Array.from(document.querySelectorAll('input[name="newState"]'))
@@ -123,7 +123,7 @@ html(lang="es")
           bsModal.show();
         });
 
-        // Alertita temporal
+
         function showTempAlert(message, type = "info") {
           const existing = document.getElementById("tempAlertChangeState");
           if (existing) existing.remove();
@@ -136,7 +136,7 @@ html(lang="es")
           setTimeout(() => alert.remove(), 2500);
         }
 
-        // Enviar cambio de estado
+ 
         submitBtn.addEventListener("click", async () => {
           const selected = document.querySelector('input[name="newState"]:checked');
           if (!selected) {
