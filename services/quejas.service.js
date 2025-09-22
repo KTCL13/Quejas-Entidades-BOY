@@ -1,5 +1,6 @@
 const { Complaint, Entity } = require('../models');
 const { setEntitiesCache } = require('../config/cache');
+const  COMPLAINT_STATES  = require('../config/constants');
 
 // Obtener quejas paginadas por entidad
 exports.getQuejasPaginadasForEntity = async (entidadId, page = 1, limit = 10) => {
@@ -148,5 +149,14 @@ exports.getComplaintById = async (complaintId) => {
   } catch (error) {
     console.error('Error al obtener la queja por ID:', error);
     throw new Error('Error al obtener la queja por ID');
+  }
+};
+
+exports.getComplaintStates = async () => {
+  try {
+    return Object.values(COMPLAINT_STATES);
+  } catch (error) {
+    console.error('Error al obtener los estados de las quejas:', error);
+    throw new Error('Error al obtener los estados de las quejas');
   }
 };

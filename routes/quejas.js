@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { getEntitiesCache } = require('../config/cache');
-const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad, deleteComplaint, changeComplaintState, getComplaintById} = require('../services/quejas.service');
+const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad, deleteComplaint, changeComplaintState, getComplaintById, getComplaintStates} = require('../services/quejas.service');
 const { enviarCorreo } = require('../services/email.service'); //importamos el servicio de correo email.srviece.js
 const { verifyRecaptcha } = require('../middleware/recaptcha');
 
@@ -178,6 +178,15 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-
+// GET /api/complaints/states
+router.get('/data/states', async (req, res) => {
+  try {
+    const states = await getComplaintStates();
+    res.json(states);
+  } catch (err) {
+    console.error('Error en /api/complaints/states:', err.message || err);
+    res.status(500).json({ error: 'Error al obtener los estados de las quejas.', details: err.message });
+  }
+});
 
 module.exports = router;
