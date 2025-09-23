@@ -12,12 +12,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// GET /api/reportes
+// GET /api/reports
 router.get('/', async (req, res) => {
   res.render('reportes', { activePage: 'reportes', mensaje: null });
 });
 
-// GET /api/reportes/ver
+// GET /api/reports/ver
 router.get('/ver', async (req, res) => {
   const clientIp = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
 

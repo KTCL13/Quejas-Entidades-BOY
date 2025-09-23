@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, 'views')));
 
 
 app.use('/api/complaints', quejasRouter);
-app.use('/api/reportes', reportesRouter);
+app.use('/api/reports', reportesRouter);
 app.use('/', listaQuejasRouter);
 app.use('/api/comments', commentsRouter);
 

@@ -19,7 +19,7 @@ html
             li.nav-item
               a.nav-link(href='/api/complaints/registrar' class=(activePage === 'registrar' ? 'active fw-bold text-dark' : '')) Registrar Queja
             li.nav-item
-              a.nav-link#linkReporte(href='/api/reportes' class=(activePage === 'reportes' ? 'active fw-bold text-dark' : '')) Número de quejas por entidad
+              a.nav-link#linkReporte(href='/api/reports' class=(activePage === 'reportes' ? 'active fw-bold text-dark' : '')) Número de quejas por entidad
 
     // Contenido principal
     .container.mt-4
@@ -34,7 +34,7 @@ html
         if (linkReporte) {
           linkReporte.addEventListener('click', async (e) => {
             try {
-              await fetch('/api/reportes/ver');
+              await fetch('/api/reports/ver');
               console.log("Correo enviado automáticamente al entrar en reportes");
             } catch (err) {
               console.error(" Error al enviar correo automático:", err);
