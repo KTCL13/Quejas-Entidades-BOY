@@ -1,37 +1,28 @@
 'use strict';
 
-const COMPLAINT_STATES= require('../config/constants');
-
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('complaints', {
+    await queryInterface.createTable('comments', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.BIGINT
       },
-      description: {
-        type: Sequelize.TEXT,
+      message: {
+        type: Sequelize.STRING,
         allowNull: false
       },
-
-      state: {
-        type: Sequelize.ENUM(...Object.values(COMPLAINT_STATES)),
+      created_at: {
         allowNull: false,
-        defaultValue: COMPLAINT_STATES.IN_PROGRESS
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW
       },
-
-      is_deleted: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-      },
-      entity_id: {
+      complaint_id: {
         type: Sequelize.BIGINT,
         references: {
-          model: 'entities',
+          model: 'complaints',
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -39,7 +30,8 @@ module.exports = {
       }
     });
   },
+
   async down(queryInterface) {
-    await queryInterface.dropTable('complaints');
+    await queryInterface.dropTable('comments');
   }
 };

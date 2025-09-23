@@ -1,0 +1,233 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Detalle Queja
+    link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet")
+
+  body.bg-light
+    // Navbar
+    nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+      .container-fluid
+        a.navbar-brand(href="#") Quejas Entidades Públicas de Boyacá
+        .collapse.navbar-collapse
+          ul.navbar-nav.ms-auto
+            li.nav-item
+              a.nav-link.active(href="#") Listado de quejas
+            li.nav-item
+              a.nav-link(href="#") Registrar Queja
+            li.nav-item
+              a.nav-link(href="#") Número de quejas por entidad
+
+    .container.my-4
+      .card.shadow
+        .card-body
+          // Encabezado
+          h5.card-title Queja ##{complaint.id} realizada a "#{complaint.entities}"
+          .d-flex.justify-content-between.align-items-center.mb-3
+            span
+              strong Estado:
+              |  
+              span#currentState #{complaint.state}
+            button.btn.btn-outline-dark.btn-sm#btnChangeState Cambiar estado
+
+          .mb-4
+            label.form-label.fw-bold(for="textoQueja") Texto de la queja
+            textarea#textoQueja.form-control(rows="4" readonly)= complaint.description
+
+          h6.fw-bold Comentarios
+          .list-group.mb-3#comments-container
+
+
+          button.btn.btn-primary.btn-sm#showAddComment(type="button") Agregar comentario
+
+
+          form#addCommentForm.mt-3.d-none
+            .mb-3
+              textarea#newComment.form-control(rows="3" maxlength="2000" placeholder="Escribe tu comentario..." required)
+            div
+              button.btn.btn-secondary.btn-sm(type="button" id="cancelComment") Cancelar
+              button.btn.btn-success.btn-sm(type="submit") Agregar comentario
+
+
+    .modal.fade#changeStateModal(tabindex='-1' aria-hidden='true')
+      .modal-dialog.modal-dialog-centered
+        .modal-content
+          .modal-header
+            h5.modal-title Seleccione un estado
+            button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
+          .modal-body
+            form#formChangeState
+              .mb-3#statesContainer
+                // Radios se cargarán dinámicamente con JS desde /api/complaints/data/states
+              .mb-3
+                label.form-label(for='adminPassword') Ingrese contraseña de administrador
+                input#adminPassword.form-control(type='password' placeholder='Contraseña' required)
+              input#complaintId(type='hidden' value=complaint.id)
+          .modal-footer
+            button.btn.btn-danger(type='button' data-bs-dismiss='modal') Cancelar
+            button.btn.btn-dark#submitChangeState(type='button') Cambiar Estado
+
+    // Scripts
+    script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js")
+    script(src="/js/mainComment.js")
+
+    script.
+      document.addEventListener("DOMContentLoaded", () => {
+
+        const btnOpen = document.getElementById("btnChangeState");
+        const modalEl = document.getElementById("changeStateModal");
+        const submitBtn = document.getElementById("submitChangeState");
+        const adminPasswordInput = document.getElementById("adminPassword");
+        const complaintIdInput = document.getElementById("complaintId");
+        const currentStateEl = document.getElementById("currentState");
+        const statesContainer = document.getElementById("statesContainer");
+
+        if (!btnOpen || !modalEl || !submitBtn) return;
+
+        const bsModal = new bootstrap.Modal(modalEl, { keyboard: true });
+
+        btnOpen.addEventListener("click", async () => {
+          statesContainer.innerHTML = "<div class='text-muted'>Cargando estados...</div>";
+          try {
+            const res = await fetch("/api/complaints/data/states");
+            if (!res.ok) throw new Error("No se pudieron obtener los estados");
+            const states = await res.json();
+
+            statesContainer.innerHTML = "";
+            states.forEach((state, idx) => {
+              const div = document.createElement("div");
+              div.classList.add("form-check");
+              div.innerHTML = `
+                <input class="form-check-input" type="radio" 
+                       name="newState" id="state_${idx}" value="${state}">
+                <label class="form-check-label" for="state_${idx}">
+                  ${state}
+                </label>`;
+              statesContainer.appendChild(div);
+            });
+
+            const cur = currentStateEl && currentStateEl.textContent.trim();
+            if (cur) {
+              const radio = Array.from(document.querySelectorAll('input[name="newState"]'))
+                .find(r => r.value === cur);
+              if (radio) radio.checked = true;
+            }
+
+          } catch (err) {
+            console.error("Error cargando estados:", err);
+            statesContainer.innerHTML = `<div class="text-danger">Error cargando estados</div>`;
+          }
+
+          adminPasswordInput.value = "";
+          bsModal.show();
+        });
+
+        function showTempAlert(message, type = "info") {
+          const existing = document.getElementById("tempAlertChangeState");
+          if (existing) existing.remove();
+          const alert = document.createElement("div");
+          alert.id = "tempAlertChangeState";
+          alert.className = `alert alert-${type} position-fixed bottom-0 end-0 m-3`;
+          alert.style.zIndex = 9999;
+          alert.textContent = message;
+          document.body.appendChild(alert);
+          setTimeout(() => alert.remove(), 2500);
+        }
+
+        submitBtn.addEventListener("click", async () => {
+          const selected = document.querySelector('input[name="newState"]:checked');
+          if (!selected) {
+            showTempAlert("Seleccione un estado.", "warning");
+            return;
+          }
+          const newState = selected.value;
+          const password = adminPasswordInput.value || "";
+          const complaintId = complaintIdInput && complaintIdInput.value;
+
+          if (!password) {
+            showTempAlert("Ingrese la contraseña de administrador.", "warning");
+            return;
+          }
+
+          try {
+            const res = await fetch(`/api/complaints/change-state/${complaintId}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                "x-admin-pass": password
+              },
+              body: JSON.stringify({ newState })
+            });
+
+            if (res.ok) {
+              bsModal.hide();
+              if (currentStateEl) currentStateEl.textContent = newState;
+              showTempAlert("Estado cambiado correctamente.", "success");
+            } else if (res.status === 401) {
+              showTempAlert("No autorizado: contraseña incorrecta.", "danger");
+            } else {
+              showTempAlert("Error al cambiar estado.", "danger");
+            }
+          } catch (err) {
+            console.error("Error en petición:", err);
+            showTempAlert("Error de red al cambiar estado.", "danger");
+          }
+        });
+
+
+        const btnShowComment = document.getElementById("showAddComment");
+        const formAddComment = document.getElementById("addCommentForm");
+        const cancelCommentBtn = document.getElementById("cancelComment");
+        const commentsContainer = document.getElementById("comments-container");
+        const complaintId = "#{complaint.id}";
+
+        if (btnShowComment && formAddComment) {
+    
+          btnShowComment.addEventListener("click", () => {
+            formAddComment.classList.remove("d-none");
+            btnShowComment.classList.add("d-none");
+          });
+
+
+          cancelCommentBtn.addEventListener("click", () => {
+            formAddComment.classList.add("d-none");
+            btnShowComment.classList.remove("d-none");
+            formAddComment.reset();
+          });
+
+
+          formAddComment.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const message = document.getElementById("newComment").value.trim();
+            if (!message) return;
+
+            try {
+              const res = await fetch(`/api/comments/complaint/${complaintId}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message })
+              });
+
+              if (res.ok) {
+                const data = await res.json();
+ 
+                const li = document.createElement("div");
+                li.className = "list-group-item";
+                li.textContent = `${data.message} - ${data.createdAt || new Date().toLocaleDateString()}`;
+                commentsContainer.appendChild(li);
+
+                formAddComment.reset();
+                formAddComment.classList.add("d-none");
+                btnShowComment.classList.remove("d-none");
+              } else {
+                alert("Error al agregar comentario");
+              }
+            } catch (err) {
+              console.error("Error:", err);
+              alert("Error de red al agregar comentario");
+            }
+          });
+        }
+      });

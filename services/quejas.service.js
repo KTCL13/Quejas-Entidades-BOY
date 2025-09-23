@@ -1,5 +1,6 @@
 const { Complaint, Entity } = require('../models');
 const { setEntitiesCache } = require('../config/cache');
+const  COMPLAINT_STATES  = require('../config/constants');
 
 // Obtener quejas paginadas por entidad
 exports.getQuejasPaginadasForEntity = async (entidadId, page = 1, limit = 10) => {
@@ -70,12 +71,9 @@ exports.createQueja = async ({ texto, entity_id }) => {
     throw new Error('La entidad especificada no existe');
   }
 
-
-
   const nuevaQueja = await Complaint.create({
     description: texto.trim(),
     entity_id
-
   });
 
   return nuevaQueja;
@@ -106,6 +104,7 @@ exports.getReporteQuejasPorEntidad = async () => {
   }
 };
 
+
 exports.deleteComplaint = async (complaintId) => {
   try {
     const complaint = await Complaint.findByPk(complaintId);
@@ -117,5 +116,47 @@ exports.deleteComplaint = async (complaintId) => {
   } catch (error) {
     console.error('Error al eliminar la queja:', error);
     throw new Error('Error al eliminar la queja');
+  }
+};
+
+
+exports.changeComplaintState = async (complaintId, newState) => {
+  try {
+    const complaint = await Complaint.findByPk(complaintId);
+    if (complaint) {
+      complaint.state = newState;
+      await complaint.save();
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error('Error al cambiar el estado de la queja:', error);
+    throw new Error('Error al cambiar el estado de la queja');
+  }
+};
+
+exports.getComplaintById = async (complaintId) => {
+  try {
+    const complaint = await Complaint.findOne({
+      where: { id: complaintId, is_deleted: false },
+      include: [{
+        model: Entity, 
+        attributes: ['id', 'name']
+      }],
+    });
+    return complaint;
+  } catch (error) {
+    console.error('Error al obtener la queja por ID:', error);
+    throw new Error('Error al obtener la queja por ID');
+  }
+};
+
+exports.getComplaintStates = async () => {
+  try {
+    return Object.values(COMPLAINT_STATES);
+  } catch (error) {
+    console.error('Error al obtener los estados de las quejas:', error);
+    throw new Error('Error al obtener los estados de las quejas');
   }
 };

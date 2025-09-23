@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const { getEntitiesCache } = require('../config/cache');
-const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad, deleteComplaint } = require('../services/quejas.service');
-const { enviarCorreo } = require('../services/email.service'); //importamos el servicio de correo email.srviece.js
+const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad, deleteComplaint, changeComplaintState, getComplaintById, getComplaintStates} = require('../services/quejas.service');
 const { verifyRecaptcha } = require('../middleware/recaptcha');
+const mailService = require('../services/nodemailer.service'); 
 
 // GET /registrar → renderiza el formulario con entidades
 router.get('/registrar', async (req, res) => {
@@ -16,7 +16,7 @@ router.get('/registrar', async (req, res) => {
   }
 });
 
-// POST /api/quejas → crea una nueva queja
+// POST /api/complaints → crea una nueva queja
 router.post('/', async (req, res) => {
   try {
     const { texto, entity_id } = req.body;
@@ -57,19 +57,9 @@ async function obtenerQuejas(req, res) {
         return res.status(403).json({ error: 'Fallo la verificación de reCAPTCHA.' });
       }
     }
-    // 🔹 Metadatos para el correo
-    const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-    // Enviar correo de notificación
-    await enviarCorreo({
-      from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_TO,
-      subject: "Consulta de lista de quejas",
-      text: `Un usuario consultó la lista de quejas (entidadId=${entidadId}) desde la IP: ${clientIp}`
-    });
-
-    // 🔹 Obtener datos de quejas
-
+    await sendNotificationEmail(entidadId);
+    
     const result = await getQuejasPaginadasForEntity(entidadId, page, limit);
     res.json(result);
   } catch {
@@ -77,7 +67,22 @@ async function obtenerQuejas(req, res) {
   }
 }
 
-// GET /api/quejas → lista paginada por entidad
+
+async function sendNotificationEmail(entityId) {
+  try {
+    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    await mailService.sendMail({
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_TO,
+      subject: "Consulta de lista de quejas",
+      text: `Un usuario consultó la lista de quejas (entidadId=${entityId}) desde la IP: ${clientIp}`
+    });
+  } catch (error) {
+    console.error('Error al enviar el correo de notificación:', error);
+  }
+}
+
+// GET /api/complaints → lista paginada por entidad
 router.get('/', obtenerQuejas);
 
 //DELETE/api/complaints/:id 
@@ -120,14 +125,72 @@ async function checkAdminPass(req) {
   return true;
 }
 
-// GET /api/quejas/quejas-por-entidad → reporte
+// GET /api/complaints/quejas-por-entidad → reporte
 router.get('/quejas-por-entidad', async (req, res) => {
   try {
     const rows = await getReporteQuejasPorEntidad();
     res.json(rows);
   } catch (err) {
-    console.error('Error en /api/reportes/quejas-por-entidad:', err.message || err);
+    console.error('Error en /api/reports/quejas-por-entidad:', err.message || err);
     res.status(500).json({ error: 'Error al generar el reporte', details: err.message });
+  }
+});
+
+// PUT /api/complaints/cambiar-estado
+router.put('/change-state/:id', async (req, res) => {
+  try {
+    const { newState } = req.body;
+    const id = req.params.id;
+
+    if (!id || !newState) {
+      return res.status(400).json({ error: 'ID de queja y nuevo estado son requeridos.' });
+    }
+
+    if (!await checkAdminPass(req)) {
+      return res.status(401).json({ error: 'Acceso denegado. Credenciales inválidas.' });
+    }
+
+    const result = await changeComplaintState(id, newState);
+    if (result) {
+      res.json({ message: 'Estado de la queja actualizado correctamente.' });
+    } else {
+      res.status(404).json({ error: 'Queja no encontrada.' });
+    }
+  } catch (err) {
+    console.error('Error en /api/complaints/cambiar-estado:', err.message || err);
+    res.status(500).json({ error: 'Error al cambiar el estado de la queja.', details: err.message });
+  }
+});
+
+
+//GET /api/complaints/:id
+router.get('/:id', async (req, res) => {
+  try {
+    const complaintId = parseInt(req.params.id, 10);
+    if (isNaN(complaintId)) {
+      return res.status(400).json({ error: 'ID de queja inválido.' });
+    }
+
+    const complaint = await getComplaintById(complaintId);
+    if (complaint) {
+      res.json(complaint);
+    } else {
+      res.status(404).json({ error: 'Queja no encontrada.' });
+    }
+  } catch (err) {
+    console.error('Error en /api/complaints/:id:', err.message || err);
+    res.status(500).json({ error: 'Error al obtener la queja.', details: err.message });
+  }
+});
+
+// GET /api/complaints/states
+router.get('/data/states', async (req, res) => {
+  try {
+    const states = await getComplaintStates();
+    res.json(states);
+  } catch (err) {
+    console.error('Error en /api/complaints/states:', err.message || err);
+    res.status(500).json({ error: 'Error al obtener los estados de las quejas.', details: err.message });
   }
 });
 
