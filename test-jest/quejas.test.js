@@ -10,7 +10,6 @@ const { createQueja, getQuejasPaginadasForEntity, deleteComplaint } = require(".
 
 const sequelize = require("../config/database");
 
-
 jest.mock("../config/cache.js");
 jest.mock("../services/quejas.service.js");
 
@@ -140,6 +139,31 @@ describe("Rutas de quejas", () => {
         "message",
         "Queja eliminada correctamente."
       );
+    });
+
+
+    it("después de eliminar una queja, no debería aparecer en el listado", async () => {
+      deleteComplaint.mockResolvedValue(true);
+
+      await request(app)
+        .delete("/1")
+        .set("x-admin-pass", process.env.ADMIN_PASS || "admin123");
+
+      getQuejasPaginadasForEntity.mockResolvedValue({
+        page: 1,
+        limit: 10,
+        total: 0,
+        data: [],
+        totalPages: 0,
+      });
+
+      const res = await request(app)
+        .get("/")
+        .query({ entidadId: 1, page: 1, limit: 10 })
+        .set("x-recaptcha-token", "fake-token");
+
+      expect(res.status).toBe(200);
+      expect(res.body.data).toEqual([]);
     });
 
     it("debería devolver 401 si la contraseña es incorrecta", async () => {
