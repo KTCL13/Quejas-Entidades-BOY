@@ -29,7 +29,7 @@ block content
       tbody.innerHTML = '<tr><td colspan="2">Cargando...</td></tr>';
 
       try {
-        const resp = await fetch('/api/quejas/quejas-por-entidad');
+        const resp = await fetch('/api/complaints/quejas-por-entidad');
         if (!resp.ok) throw new Error('Error HTTP ' + resp.status);
         const data = await resp.json();
 

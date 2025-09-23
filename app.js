@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'views')));
 
 
-app.use('/api/quejas', quejasRouter);
+app.use('/api/complaints', quejasRouter);
 app.use('/api/reportes', reportesRouter);
 app.use('/', listaQuejasRouter);
 app.use('/api/comments', commentsRouter);

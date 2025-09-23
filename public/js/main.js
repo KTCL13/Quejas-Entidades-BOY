@@ -17,7 +17,7 @@ async function fetchQuejas(entidadId, page = 1, limit = rowsPerPage) {
         .then(async function (token) {
           try {
             const res = await fetch(
-              `/api/quejas?entidadId=${entidadId}&page=${page}&limit=${limit}`,
+              `/api/complaints?entidadId=${entidadId}&page=${page}&limit=${limit}`,
               {
                 headers: {
                   "X-Recaptcha-Token": token,
@@ -134,7 +134,7 @@ confirmDeleteBtn.addEventListener("click", async () => {
   }
 
   try {
-    const res = await fetch(`/api/quejas/${complaintToDelete}`, {
+    const res = await fetch(`/api/complaints/${complaintToDelete}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
