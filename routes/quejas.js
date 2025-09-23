@@ -131,7 +131,7 @@ router.get('/quejas-por-entidad', async (req, res) => {
     const rows = await getReporteQuejasPorEntidad();
     res.json(rows);
   } catch (err) {
-    console.error('Error en /api/reportes/quejas-por-entidad:', err.message || err);
+    console.error('Error en /api/reports/quejas-por-entidad:', err.message || err);
     res.status(500).json({ error: 'Error al generar el reporte', details: err.message });
   }
 });
