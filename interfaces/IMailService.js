@@ -18,7 +18,7 @@ class IMailService {
    * @returns {Promise<any>} - Una promesa que se resuelve con la información del envío.
    * @throws {Error} - Si la implementación no está completa o falla el envío.
    */
-  async sendMail(options) {
+  async sendMail() {
     throw new Error('Método "sendMail" no implementado.');
   }
 }
