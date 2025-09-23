@@ -5,8 +5,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var listaQuejasRouter = require('./routes/complaintsList');
-var quejasRouter = require('./routes/quejas');
+var complaintsListRouter = require('./routes/complaintsList');
+var complaintsRouter = require('./routes/quejas');
 var reportesRouter = require('./routes/reportes');
 var commentsRouter = require('./routes/comments');
 const { loadEntidades } = require('./services/quejas.service');
@@ -28,9 +28,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'views')));
 
 
-app.use('/api/complaints', quejasRouter);
+app.use('/api/complaints', complaintsRouter);
 app.use('/api/reports', reportesRouter);
-app.use('/', listaQuejasRouter);
+app.use('/', complaintsListRouter);
 app.use('/api/comments', commentsRouter);
 
 loadEntidades();
