@@ -16,7 +16,7 @@ router.get('/registrar', async (req, res) => {
   }
 });
 
-// POST /api/quejas → crea una nueva queja
+// POST /api/complaints → crea una nueva queja
 router.post('/', async (req, res) => {
   try {
     const { texto, entity_id } = req.body;
@@ -82,7 +82,7 @@ async function sendNotificationEmail(entityId) {
   }
 }
 
-// GET /api/quejas → lista paginada por entidad
+// GET /api/complaints → lista paginada por entidad
 router.get('/', obtenerQuejas);
 
 //DELETE/api/complaints/:id 
@@ -125,7 +125,7 @@ async function checkAdminPass(req) {
   return true;
 }
 
-// GET /api/quejas/quejas-por-entidad → reporte
+// GET /api/complaints/quejas-por-entidad → reporte
 router.get('/quejas-por-entidad', async (req, res) => {
   try {
     const rows = await getReporteQuejasPorEntidad();

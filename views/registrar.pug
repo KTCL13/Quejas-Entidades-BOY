@@ -3,7 +3,7 @@ extends layout
 block content
   h1 Registrar Queja
 
-  form(action='/api/quejas', method='POST', id='formQueja', style='max-width:600px;margin:auto;')
+  form(action='/api/complaints', method='POST', id='formQueja', style='max-width:600px;margin:auto;')
     div(style='margin-bottom:20px;')
       label(for='id_entidad', style='display:block;margin-bottom:5px;') Entidad Pública
       select(name='id_entidad', id='id_entidad', required, style='width:100%;padding:8px;')
@@ -39,7 +39,7 @@ block content
       const entity_id = Number(id_entidad_val);
 
       try {
-        const res = await fetch('/api/quejas', {
+        const res = await fetch('/api/complaints', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ entity_id, texto })

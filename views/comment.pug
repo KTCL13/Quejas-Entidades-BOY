@@ -60,7 +60,7 @@ html(lang="es")
           .modal-body
             form#formChangeState
               .mb-3#statesContainer
-                // Radios se cargarán dinámicamente con JS desde /api/quejas/data/states
+                // Radios se cargarán dinámicamente con JS desde /api/complaints/data/states
               .mb-3
                 label.form-label(for='adminPassword') Ingrese contraseña de administrador
                 input#adminPassword.form-control(type='password' placeholder='Contraseña' required)
@@ -91,7 +91,7 @@ html(lang="es")
         btnOpen.addEventListener("click", async () => {
           statesContainer.innerHTML = "<div class='text-muted'>Cargando estados...</div>";
           try {
-            const res = await fetch("/api/quejas/data/states");
+            const res = await fetch("/api/complaints/data/states");
             if (!res.ok) throw new Error("No se pudieron obtener los estados");
             const states = await res.json();
 
@@ -152,7 +152,7 @@ html(lang="es")
           }
 
           try {
-            const res = await fetch(`/api/quejas/change-state/${complaintId}`, {
+            const res = await fetch(`/api/complaints/change-state/${complaintId}`, {
               method: "PUT",
               headers: {
                 "Content-Type": "application/json",

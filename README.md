@@ -117,16 +117,16 @@ El servidor estará disponible en [http://localhost:3000](http://localhost:3000)
 - **GET /registrar**  
   Renderiza el formulario para registrar una nueva queja.
 
-- **POST /api/quejas**  
+- **POST /api/complaints**  
   Crea una nueva queja.  
   Parámetros:  
     - `texto`: Texto de la queja (10-2000 caracteres)
     - `id_entidad`: ID de la entidad seleccionada
 
-- **GET /api/quejas?entidadId=ID&page=1&limit=10**  
+- **GET /api/complaints?entidadId=ID&page=1&limit=10**  
   Devuelve la lista paginada de quejas asociadas a una entidad.
 
-- **GET /api/quejas/quejas-por-entidad**  
+- **GET /api/complaints/quejas-por-entidad**  
   Devuelve el reporte de número de quejas agrupadas por entidad.
 
 ---
