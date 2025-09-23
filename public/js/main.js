@@ -68,7 +68,7 @@ async function renderTable(entidadId, page = 1) {
     tbody.appendChild(tr);
   }
 
-  renderPagination(result.totalPages, result.page);
+  renderPagination(result.pagination.totalPages, result.pagination.currentPage);
 }
 
 function renderPagination(totalPages, page) {
