@@ -29,7 +29,7 @@ describe("Rutas de comentarios", () => {
         .send({ message: "Comentario de prueba" });
 
       expect(res.status).toBe(201);
-      expect(res.text).toBe("Comentario agregado");
+      expect(res.text).toBe(JSON.stringify({ id: 1, message: "ok" }));
     });
 
     it("debería devolver 400 si falta el mensaje", async () => {
