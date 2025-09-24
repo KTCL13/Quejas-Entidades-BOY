@@ -1,25 +1,6 @@
-doctype html
-html(lang="es")
-  head
-    meta(charset="UTF-8")
-    meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    title Detalle Queja
-    link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet")
+extends layout
 
-  body.bg-light
-    // Navbar
-    nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
-      .container-fluid
-        a.navbar-brand(href="#") Quejas Entidades Públicas de Boyacá
-        .collapse.navbar-collapse
-          ul.navbar-nav.ms-auto
-            li.nav-item
-              a.nav-link.active(href="#") Listado de quejas
-            li.nav-item
-              a.nav-link(href="#") Registrar Queja
-            li.nav-item
-              a.nav-link(href="#") Número de quejas por entidad
-
+block content
     .container.my-4
       .card.shadow
         .card-body
@@ -37,7 +18,7 @@ html(lang="es")
             textarea#textoQueja.form-control(rows="4" readonly)= complaint.description
 
           h6.fw-bold Comentarios
-          .list-group.mb-3#comments-container
+          .list-group.mb-3#commentsContainer
 
 
           button.btn.btn-primary.btn-sm#showAddComment(type="button") Agregar comentario
@@ -180,7 +161,7 @@ html(lang="es")
         const btnShowComment = document.getElementById("showAddComment");
         const formAddComment = document.getElementById("addCommentForm");
         const cancelCommentBtn = document.getElementById("cancelComment");
-        const commentsContainer = document.getElementById("comments-container");
+        const commentsContainer = document.getElementById("commentsContainer");
         const complaintId = "#{complaint.id}";
 
         if (btnShowComment && formAddComment) {
@@ -210,12 +191,17 @@ html(lang="es")
                 body: JSON.stringify({ message })
               });
 
-              if (res.ok) {
+              if (res.status === 201) {
                 const data = await res.json();
+
+                const beautyDate = new Date(data.created_at).toLocaleString('es-CO');
  
                 const li = document.createElement("div");
-                li.className = "list-group-item";
-                li.textContent = `${data.message} - ${data.createdAt || new Date().toLocaleDateString()}`;
+                li.className = "list-group-item d-flex justify-content-between";
+                li.innerHTML = `
+                  <span>${data.message}</span>
+                  <small class="text-muted">Fecha: ${beautyDate}</small>
+                `;
                 commentsContainer.appendChild(li);
 
                 formAddComment.reset();
