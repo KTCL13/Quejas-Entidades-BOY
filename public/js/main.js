@@ -45,12 +45,29 @@ async function renderTable(entidadId, page = 1) {
         <td>${q.description}</td>
         <td>${q.state}</td>
         <td>
-          <button class="btn btn-danger btn-sm btn-delete" data-id="${q.id}">
-            Borrar
-          </button>
-          <a href="/complaint/${q.id}" class="btn btn-primary btn-sm">
-            Ver comentario
-          </a>
+          <div class="dropdown">
+            <button 
+              class="btn btn-secondary btn-sm no-caret"
+              type="button"
+              id="dropdownMenu${q.id}"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              ...
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu${q.id}">
+              <li>
+                <a class="dropdown-item btn-view" href="/complaint/${q.id}">
+                  Ver comentario
+                </a>
+              </li>
+              <li>
+                <button class="dropdown-item btn-delete" data-id="${q.id}">
+                  Eliminar
+                </button>
+              </li>
+            </ul>
+          </div>
         </td>
       `;
       tbody.appendChild(tr);
@@ -67,12 +84,13 @@ async function renderTable(entidadId, page = 1) {
 
   } else {
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td class="text-center" colspan="2">No hay quejas registradas</td>`;
+    tr.innerHTML = `<td class="text-center" colspan="3">No hay quejas registradas</td>`;
     tbody.appendChild(tr);
   }
 
   renderPagination(result.pagination.totalPages, result.pagination.currentPage);
 }
+
 
 function renderPagination(totalPages, page) {
   pagination.innerHTML = "";
@@ -178,3 +196,46 @@ function showAlert(message, type = "success") {
     setTimeout(() => alertDiv.remove(), 300);
   }, 3000);
 }
+
+/* ==================================================
+   Manejador manual de dropdowns (sin bootstrap.js)
+================================================== */
+(() => {
+  function closeAllDropdowns() {
+    document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+      menu.classList.remove('show');
+      const btn = menu.closest('.dropdown')?.querySelector('[data-bs-toggle="dropdown"]');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  document.addEventListener('click', (e) => {
+    const toggle = e.target.closest('[data-bs-toggle="dropdown"]');
+
+    if (toggle) {
+      e.preventDefault();
+      const dropdown = toggle.closest('.dropdown');
+      if (!dropdown) return;
+      const menu = dropdown.querySelector('.dropdown-menu');
+      if (!menu) return;
+
+      const isShown = menu.classList.contains('show');
+      closeAllDropdowns();
+      if (!isShown) {
+        menu.classList.add('show');
+        toggle.setAttribute('aria-expanded', 'true');
+      }
+      return;
+    }
+
+    // Clic fuera: cerrar todo
+    if (!e.target.closest('.dropdown')) {
+      closeAllDropdowns();
+    }
+  });
+
+  // Cerrar con ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAllDropdowns();
+  });
+})();
