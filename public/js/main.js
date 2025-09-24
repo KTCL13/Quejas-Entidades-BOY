@@ -48,6 +48,9 @@ async function renderTable(entidadId, page = 1) {
           <button class="btn btn-danger btn-sm btn-delete" data-id="${q.id}">
             Borrar
           </button>
+          <a href="/complaint/${q.id}" class="btn btn-primary btn-sm">
+            Ver comentario
+          </a>
         </td>
       `;
       tbody.appendChild(tr);
