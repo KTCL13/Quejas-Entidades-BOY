@@ -58,7 +58,7 @@ async function obtenerQuejas(req, res) {
       }
     }
 
-    await sendNotificationEmail(entidadId, req);
+    sendNotificationEmail(entidadId, req);
 
     const result = await getQuejasPaginadasForEntity(entidadId, page, limit);
     res.json(result);
