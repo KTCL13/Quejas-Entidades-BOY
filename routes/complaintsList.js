@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var { getEntitiesCache } = require('../config/cache');
+var { getComplaintById } = require('../services/quejas.service');
 
 // Listado de quejas
 router.get('/', async (req, res) => {
@@ -21,21 +22,8 @@ router.get('/complaint/:id', async (req, res) => {
 
   try {
 
-    const apiResponse = await fetch(`http://localhost:3000/api/complaints/${id}`);
+    const complaint = await getComplaintById(id);
 
-
-    if (!apiResponse.ok) {
-      return res.status(apiResponse.status).send('Queja no encontrada');
-    }
-
-    const data = await apiResponse.json();
-
-    const complaint = {
-      id: data.id,
-      entities: data.Entity.name,
-      state: data.state,
-      description: data.description,
-    };
 
     res.render('comment', {
       complaint,
