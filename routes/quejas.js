@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const { getEntitiesCache } = require('../config/cache');
-const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad, deleteComplaint, changeComplaintState, getComplaintById, getComplaintStates} = require('../services/quejas.service');
+const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad, deleteComplaint, changeComplaintState, getComplaintById, getComplaintStates } = require('../services/quejas.service');
 const { verifyRecaptcha } = require('../middleware/recaptcha');
-const mailService = require('../services/nodemailer.service'); 
+const mailService = require('../services/nodemailer.service');
 
 // GET /registrar → renderiza el formulario con entidades
 router.get('/registrar', async (req, res) => {
@@ -58,8 +58,8 @@ async function obtenerQuejas(req, res) {
       }
     }
 
-    await sendNotificationEmail(entidadId);
-    
+    await sendNotificationEmail(entidadId, req);
+
     const result = await getQuejasPaginadasForEntity(entidadId, page, limit);
     res.json(result);
   } catch {
@@ -68,7 +68,7 @@ async function obtenerQuejas(req, res) {
 }
 
 
-async function sendNotificationEmail(entityId) {
+async function sendNotificationEmail(entityId, req) {
   try {
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await mailService.sendMail({
