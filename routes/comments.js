@@ -18,8 +18,8 @@ router.post('/complaint/:id', async (req, res) => {
   const complaintId = req.params.id;
   const { message } = req.body;
   if (!isNaN(complaintId) && message) {
-    await createCommentByComplaintId(complaintId, message);
-    res.status(201).send('Comentario agregado');
+    const newComment = await createCommentByComplaintId(complaintId, message);
+    res.status(201).json(newComment);
   } else {
     res.status(400).send('ID de queja inválido o contenido vacío');
   }
