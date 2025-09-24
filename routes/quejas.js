@@ -4,7 +4,7 @@ const router = express.Router();
 const { getEntitiesCache } = require('../config/cache');
 const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad, deleteComplaint, changeComplaintState, getComplaintById, getComplaintStates } = require('../services/quejas.service');
 const { verifyRecaptcha } = require('../middleware/recaptcha');
-const mailService = require('../services/nodemailer.service');
+const mailService = require('../services/sendgrid.service');
 
 // GET /registrar → renderiza el formulario con entidades
 router.get('/registrar', async (req, res) => {
