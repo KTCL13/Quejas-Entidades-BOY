@@ -9,14 +9,13 @@ class NodemailerService extends IMailService {
     super();
 
     this.#transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: process.env.EMAIL_PORT,
-      secure: process.env.EMAIL_SECURE,
+      service: process.env.EMAIL_HOST,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
       }
     });
+
     console.log('✅ Servicio de correo con Nodemailer inicializado.');
   }
 
