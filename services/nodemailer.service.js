@@ -9,12 +9,12 @@ class NodemailerService extends IMailService {
     super();
 
     this.#transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
+      host: process.env.EMAIL_HOST,
       port: 587,
-      secure: false, // true para 465, false para otros puertos como 587
+      secure: false,
       auth: {
-        user: process.env.EMAIL_USER, // Tu dirección de correo de Gmail
-        pass: process.env.EMAIL_PASS  // Tu Contraseña de Aplicación de 16 dígitos
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
       }
     });
     console.log('✅ Servicio de correo con Nodemailer inicializado.');
@@ -29,7 +29,7 @@ class NodemailerService extends IMailService {
   async sendMail({ to, subject, text, html }) {
     try {
       const info = await this.#transporter.sendMail({
-        from: `"Quejas Boyacá" <${process.env.EMAIL_USER}>`,
+        from: `"Quejas Boyacá" <${process.env.EMAIL_FROM}>`,
         to,
         subject,
         text,

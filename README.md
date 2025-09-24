@@ -46,9 +46,11 @@ DB_PASSWORD=user_dev_password
 DB_NAME=quejas_db_dev
 DB_HOST=localhost
 DB_PORT=5432
-EMAIL_USER=nombreempresa@email.com
-EMAIL_PASS=password
+EMAIL_USER= usuario de correo o api
+EMAIL_PASS=password correo o api key
 EMAIL_TO=nameusuario@email.com
+EMAIL_FROM=nombreCorreo@gmail.com
+EMAIL_HOST= servicio de envio de correo 
 ADMIN_PASS=adminPassword
 RECAPTCHA_SECRET_KEY= recaptchakey
 ```
