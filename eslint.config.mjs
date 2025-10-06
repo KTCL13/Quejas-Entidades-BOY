@@ -30,7 +30,7 @@ export default defineConfig([
     rules: {
       "no-unused-vars": "warn",
       "no-undef": "off",
-      "no-console": "off",
+      "no-console": "warn",
     }
   }
 ]);
