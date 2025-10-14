@@ -1,6 +1,7 @@
 const { Complaint } = require('../models/Complaint');
 const { Entity } = require('../models/Entity');
 
+
 async function getComplaintById(complaintId) {
   try {
     const complaint = await Complaint.findOne({
@@ -17,4 +18,25 @@ async function getComplaintById(complaintId) {
   }
 }
 
-module.exports = { getComplaintById };
+
+async function updateComplaintState(complaintId, newState) {
+  try {
+    const complaint = await Complaint.findByPk(complaintId);
+    if (!complaint) {
+      return null;
+    }
+
+    complaint.state = newState;
+    await complaint.save();
+
+    return complaint;
+  } catch (error) {
+    console.error('Error al actualizar el estado de la queja:', error);
+    throw new Error('Error al actualizar el estado de la queja');
+  }
+}
+
+module.exports = { 
+  getComplaintById,
+  updateComplaintState
+};
