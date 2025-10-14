@@ -1,6 +1,6 @@
-const nodemailer = require('nodemailer');
-require('dotenv').config();
-const IMailService = require('../interfaces/IMailService');
+const nodemailer = require("nodemailer");
+require("dotenv").config();
+const IMailService = require("../interfaces/IMailService");
 
 class NodemailerService extends IMailService {
   #transporter; // Propiedad privada
@@ -12,11 +12,9 @@ class NodemailerService extends IMailService {
       service: process.env.EMAIL_HOST,
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
+        pass: process.env.EMAIL_PASS,
+      },
     });
-
-    console.log('✅ Servicio de correo con Nodemailer inicializado.');
   }
 
   /**
@@ -32,13 +30,12 @@ class NodemailerService extends IMailService {
         to,
         subject,
         text,
-        html
+        html,
       });
-      console.log('Correo enviado con Nodemailer:', info.messageId);
       return info;
     } catch (error) {
-      console.error('Error al enviar correo con Nodemailer:', error.message);
-      throw new Error('Fallo en el envío del correo.');
+      console.error("Error al enviar correo con Nodemailer:", error.message);
+      throw new Error("Fallo en el envío del correo.");
     }
   }
 }
