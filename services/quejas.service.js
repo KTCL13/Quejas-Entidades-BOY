@@ -2,6 +2,7 @@ const { Complaint, Entity } = require('../models');
 const { setEntitiesCache } = require('../config/cache');
 const COMPLAINT_STATES = require('../config/constants');
 const { paginate } = require('../interfaces/IPagination');
+const complaintRepository = require('../repositories/complaintRepository');
 
 // Obtener quejas paginadas por entidad
 exports.getQuejasPaginadasForEntity = async (entidadId, page, limit) => {
@@ -132,16 +133,13 @@ exports.changeComplaintState = async (complaintId, newState) => {
 
 exports.getComplaintById = async (complaintId) => {
   try {
-    const complaint = await Complaint.findOne({
-      where: { id: complaintId, is_deleted: false },
-      include: [{
-        model: Entity,
-        attributes: ['id', 'name']
-      }],
-    });
+    const complaint = await complaintRepository.findComplaintById(complaintId);
+    if (!complaint) {
+      throw new Error('Queja no encontrada o eliminada');
+    }
     return complaint;
   } catch (error) {
-    console.error('Error al obtener la queja por ID:', error);
+    console.error('Error en getComplaintById:', error);
     throw new Error('Error al obtener la queja por ID');
   }
 };
