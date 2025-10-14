@@ -1,7 +1,7 @@
-import { Complaint } from '../models/Complaint.js';
-import { Entity } from '../models/Entity.js';
+const { Complaint } = require('../models/Complaint');
+const { Entity } = require('../models/Entity');
 
-export async function findComplaintById(complaintId) {
+async function getComplaintById(complaintId) {
   try {
     const complaint = await Complaint.findOne({
       where: { id: complaintId, is_deleted: false },
@@ -12,7 +12,9 @@ export async function findComplaintById(complaintId) {
     });
     return complaint;
   } catch (error) {
-    console.error('Error en ComplaintRepository.findComplaintById:', error);
-    throw error;
+    console.error('Error al obtener la queja por ID:', error);
+    throw new Error('Error al obtener la queja por ID');
   }
 }
+
+module.exports = { getComplaintById };
