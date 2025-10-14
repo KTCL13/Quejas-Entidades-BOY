@@ -4,7 +4,7 @@ const COMPLAINT_STATES = require('../config/constants');
 const { paginate } = require('../interfaces/IPagination');
 const complaintRepository = require('../repositories/complaintRepository');
 
-// Obtener quejas paginadas por entidad
+
 exports.getQuejasPaginadasForEntity = async (entidadId, page, limit) => {
   try {
     const queryOptions = {
@@ -12,18 +12,15 @@ exports.getQuejasPaginadasForEntity = async (entidadId, page, limit) => {
         entity_id: entidadId,
         is_deleted: false
       },
-
       include: [{
         model: Entity,
         attributes: ['name']
       }],
       order: [['id', 'DESC']]
-    }
+    };
 
     const paginatedResult = await paginate({ model: Complaint, page, pageSize: limit, options: queryOptions });
-
     return paginatedResult;
-
   } catch (error) {
     console.error(error);
     throw new Error('Error al obtener las quejas');
@@ -31,7 +28,6 @@ exports.getQuejasPaginadasForEntity = async (entidadId, page, limit) => {
 };
 
 
-// Cargar entidades en caché
 exports.loadEntidades = async () => {
   const entidades = await Entity.findAll({
     order: [['name', 'ASC']]
@@ -39,7 +35,7 @@ exports.loadEntidades = async () => {
   setEntitiesCache(entidades);
 };
 
-// Obtener todas las entidades
+
 exports.getEntidades = async () => {
   try {
     const entidades = await Entity.findAll({
@@ -52,16 +48,14 @@ exports.getEntidades = async () => {
   }
 };
 
-// Registrar una nueva queja
-exports.createQueja = async ({ texto, entity_id }) => {
 
+exports.createQueja = async ({ texto, entity_id }) => {
   if (!texto || texto.trim().length < 10 || texto.trim().length > 2000) {
     throw new Error('La queja debe tener entre 10 y 2000 caracteres');
   }
 
-  // Validar si la entidad existe
+ 
   const entidad = await Entity.findByPk(entity_id);
-
   if (!entidad) {
     throw new Error('La entidad especificada no existe');
   }
@@ -74,16 +68,14 @@ exports.createQueja = async ({ texto, entity_id }) => {
   return nuevaQueja;
 };
 
-// Reporte: número de quejas por entidad
+
 exports.getReporteQuejasPorEntidad = async () => {
   try {
     const res = await Entity.findAll({
       attributes: [
         'id',
         'name',
-
         [Complaint.sequelize.fn('COUNT', Complaint.sequelize.col('Complaints.id')), 'total_quejas']
-
       ],
       include: [{
         model: Complaint,
@@ -98,7 +90,6 @@ exports.getReporteQuejasPorEntidad = async () => {
     throw err;
   }
 };
-
 
 exports.deleteComplaint = async (complaintId) => {
   try {
@@ -117,10 +108,9 @@ exports.deleteComplaint = async (complaintId) => {
 
 exports.changeComplaintState = async (complaintId, newState) => {
   try {
-    const complaint = await Complaint.findByPk(complaintId);
-    if (complaint) {
-      complaint.state = newState;
-      await complaint.save();
+    const updatedComplaint = await complaintRepository.updateComplaintState(complaintId, newState);
+
+    if (updatedComplaint) {
       return true;
     } else {
       return false;
@@ -133,7 +123,7 @@ exports.changeComplaintState = async (complaintId, newState) => {
 
 exports.getComplaintById = async (complaintId) => {
   try {
-    const complaint = await complaintRepository.findComplaintById(complaintId);
+    const complaint = await complaintRepository.getComplaintById(complaintId);
     if (!complaint) {
       throw new Error('Queja no encontrada o eliminada');
     }
