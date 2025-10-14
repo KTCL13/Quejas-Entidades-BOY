@@ -4,7 +4,7 @@ require('dotenv').config();
 // Define las opciones de conexión base
 const options = {
   dialect: 'postgres',
-  logging: false
+  logging: false,
 };
 
 // Lógica condicional para SSL en producción
@@ -12,8 +12,8 @@ if (process.env.NODE_ENV === 'production') {
   options.dialectOptions = {
     ssl: {
       require: true,
-      rejectUnauthorized: false
-    }
+      rejectUnauthorized: false,
+    },
   };
 }
 

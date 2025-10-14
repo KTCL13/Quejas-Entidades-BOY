@@ -8,30 +8,30 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.BIGINT
+        type: Sequelize.BIGINT,
       },
       message: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
+        defaultValue: Sequelize.NOW,
       },
       complaint_id: {
         type: Sequelize.BIGINT,
         references: {
           model: 'complaints',
-          key: 'id'
+          key: 'id',
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
-      }
+        onDelete: 'SET NULL',
+      },
     });
   },
 
   async down(queryInterface) {
     await queryInterface.dropTable('comments');
-  }
+  },
 };

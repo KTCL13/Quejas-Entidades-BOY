@@ -1,6 +1,6 @@
 'use strict';
 
-const COMPLAINT_STATES= require('../config/constants');
+const COMPLAINT_STATES = require('../config/constants');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -10,36 +10,36 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.BIGINT
+        type: Sequelize.BIGINT,
       },
       description: {
         type: Sequelize.TEXT,
-        allowNull: false
+        allowNull: false,
       },
 
       state: {
         type: Sequelize.ENUM(...Object.values(COMPLAINT_STATES)),
         allowNull: false,
-        defaultValue: COMPLAINT_STATES.IN_PROGRESS
+        defaultValue: COMPLAINT_STATES.IN_PROGRESS,
       },
 
       is_deleted: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
-        defaultValue: false
+        defaultValue: false,
       },
       entity_id: {
         type: Sequelize.BIGINT,
         references: {
           model: 'entities',
-          key: 'id'
+          key: 'id',
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
-      }
+        onDelete: 'SET NULL',
+      },
     });
   },
   async down(queryInterface) {
     await queryInterface.dropTable('complaints');
-  }
+  },
 };

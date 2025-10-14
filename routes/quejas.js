@@ -2,7 +2,15 @@ const express = require('express');
 const router = express.Router();
 
 const { getEntitiesCache } = require('../config/cache');
-const { createQueja, getQuejasPaginadasForEntity, getReporteQuejasPorEntidad, deleteComplaint, changeComplaintState, getComplaintById, getComplaintStates } = require('../services/quejas.service');
+const {
+  createQueja,
+  getQuejasPaginadasForEntity,
+  getReporteQuejasPorEntidad,
+  deleteComplaint,
+  changeComplaintState,
+  getComplaintById,
+  getComplaintStates,
+} = require('../services/quejas.service');
 const { verifyRecaptcha } = require('../middleware/recaptcha');
 const mailService = require('../services/sendgrid.service');
 
@@ -22,19 +30,21 @@ router.post('/', async (req, res) => {
     const { texto, entity_id } = req.body;
 
     if (!texto || texto.trim().length < 10 || texto.trim().length > 2000) {
-      return res.status(400).json({ error: "La queja debe tener entre 10 y 2000 caracteres." });
+      return res
+        .status(400)
+        .json({ error: 'La queja debe tener entre 10 y 2000 caracteres.' });
     }
     if (!entity_id || isNaN(entity_id)) {
-      return res.status(400).json({ error: "Debe seleccionar una entidad válida." });
+      return res
+        .status(400)
+        .json({ error: 'Debe seleccionar una entidad válida.' });
     }
     const queja = await createQueja({ texto, entity_id });
-    res.status(201).json({ message: "Queja registrada", data: queja });
+    res.status(201).json({ message: 'Queja registrada', data: queja });
   } catch {
     res.status(500).json({ error: 'Error al registrar la queja.' });
   }
 });
-
-
 
 // Controlador para obtener quejas paginadas
 async function obtenerQuejas(req, res) {
@@ -44,7 +54,9 @@ async function obtenerQuejas(req, res) {
     const limit = parseInt(req.query.limit) || 10;
 
     if (!entidadId || isNaN(entidadId)) {
-      return res.status(400).json({ error: 'Debe seleccionar una entidad válida.' });
+      return res
+        .status(400)
+        .json({ error: 'Debe seleccionar una entidad válida.' });
     }
 
     if (process.env.NODE_ENV !== 'test') {
@@ -54,7 +66,9 @@ async function obtenerQuejas(req, res) {
       }
       const recaptchaOk = await verifyRecaptcha(token);
       if (!recaptchaOk) {
-        return res.status(403).json({ error: 'Fallo la verificación de reCAPTCHA.' });
+        return res
+          .status(403)
+          .json({ error: 'Fallo la verificación de reCAPTCHA.' });
       }
     }
 
@@ -67,15 +81,14 @@ async function obtenerQuejas(req, res) {
   }
 }
 
-
 async function sendNotificationEmail(entityId, req) {
   try {
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     await mailService.sendMail({
       from: process.env.EMAIL_USER,
       to: process.env.EMAIL_TO,
-      subject: "Consulta de lista de quejas",
-      text: `Un usuario consultó la lista de quejas (entidadId=${entityId}) desde la IP: ${clientIp}`
+      subject: 'Consulta de lista de quejas',
+      text: `Un usuario consultó la lista de quejas (entidadId=${entityId}) desde la IP: ${clientIp}`,
     });
   } catch (error) {
     console.error('Error al enviar el correo de notificación:', error);
@@ -85,7 +98,7 @@ async function sendNotificationEmail(entityId, req) {
 // GET /api/complaints → lista paginada por entidad
 router.get('/', obtenerQuejas);
 
-//DELETE/api/complaints/:id 
+//DELETE/api/complaints/:id
 router.delete('/:id', async (req, res) => {
   try {
     const complaintId = parseInt(req.params.id, 10);
@@ -93,8 +106,10 @@ router.delete('/:id', async (req, res) => {
       return res.status(400).json({ error: 'ID de queja inválido.' });
     }
 
-    if (!await checkAdminPass(req)) {
-      return res.status(401).json({ error: 'Acceso denegado. Credenciales inválidas.' });
+    if (!(await checkAdminPass(req))) {
+      return res
+        .status(401)
+        .json({ error: 'Acceso denegado. Credenciales inválidas.' });
     }
 
     if (await handleDeleteComplaint(complaintId)) {
@@ -131,8 +146,13 @@ router.get('/quejas-por-entidad', async (req, res) => {
     const rows = await getReporteQuejasPorEntidad();
     res.json(rows);
   } catch (err) {
-    console.error('Error en /api/reports/quejas-por-entidad:', err.message || err);
-    res.status(500).json({ error: 'Error al generar el reporte', details: err.message });
+    console.error(
+      'Error en /api/reports/quejas-por-entidad:',
+      err.message || err
+    );
+    res
+      .status(500)
+      .json({ error: 'Error al generar el reporte', details: err.message });
   }
 });
 
@@ -143,11 +163,15 @@ router.put('/change-state/:id', async (req, res) => {
     const id = req.params.id;
 
     if (!id || !newState) {
-      return res.status(400).json({ error: 'ID de queja y nuevo estado son requeridos.' });
+      return res
+        .status(400)
+        .json({ error: 'ID de queja y nuevo estado son requeridos.' });
     }
 
-    if (!await checkAdminPass(req)) {
-      return res.status(401).json({ error: 'Acceso denegado. Credenciales inválidas.' });
+    if (!(await checkAdminPass(req))) {
+      return res
+        .status(401)
+        .json({ error: 'Acceso denegado. Credenciales inválidas.' });
     }
 
     const result = await changeComplaintState(id, newState);
@@ -157,11 +181,18 @@ router.put('/change-state/:id', async (req, res) => {
       res.status(404).json({ error: 'Queja no encontrada.' });
     }
   } catch (err) {
-    console.error('Error en /api/complaints/cambiar-estado:', err.message || err);
-    res.status(500).json({ error: 'Error al cambiar el estado de la queja.', details: err.message });
+    console.error(
+      'Error en /api/complaints/cambiar-estado:',
+      err.message || err
+    );
+    res
+      .status(500)
+      .json({
+        error: 'Error al cambiar el estado de la queja.',
+        details: err.message,
+      });
   }
 });
-
 
 //GET /api/complaints/:id
 router.get('/:id', async (req, res) => {
@@ -179,7 +210,9 @@ router.get('/:id', async (req, res) => {
     }
   } catch (err) {
     console.error('Error en /api/complaints/:id:', err.message || err);
-    res.status(500).json({ error: 'Error al obtener la queja.', details: err.message });
+    res
+      .status(500)
+      .json({ error: 'Error al obtener la queja.', details: err.message });
   }
 });
 
@@ -190,7 +223,12 @@ router.get('/data/states', async (req, res) => {
     res.json(states);
   } catch (err) {
     console.error('Error en /api/complaints/states:', err.message || err);
-    res.status(500).json({ error: 'Error al obtener los estados de las quejas.', details: err.message });
+    res
+      .status(500)
+      .json({
+        error: 'Error al obtener los estados de las quejas.',
+        details: err.message,
+      });
   }
 });
 

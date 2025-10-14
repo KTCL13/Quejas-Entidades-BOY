@@ -1,22 +1,24 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); 
+const sequelize = require('../config/database');
 
-const Entity = sequelize.define('Entity', {
+const Entity = sequelize.define(
+  'Entity',
+  {
+    id: {
+      type: DataTypes.BIGINT,
+      primaryKey: true,
+      autoIncrement: true,
+    },
 
-  id: {
-    type: DataTypes.BIGINT, 
-    primaryKey: true,
-    autoIncrement: true
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
   },
- 
-  name: {
-    type: DataTypes.STRING, 
-    allowNull: false 
+  {
+    tableName: 'entities',
+    timestamps: false,
   }
-}, {
-
-  tableName: 'entities', 
-  timestamps: false 
-});
+);
 
 module.exports = Entity;

@@ -50,7 +50,7 @@ EMAIL_USER= usuario de correo o api
 EMAIL_PASS=password correo o api key
 EMAIL_TO=nameusuario@email.com
 EMAIL_FROM=nombreCorreo@gmail.com
-EMAIL_HOST= servicio de envio de correo 
+EMAIL_HOST= servicio de envio de correo
 ADMIN_PASS=adminPassword
 RECAPTCHA_SECRET_KEY= recaptchakey
 ```
@@ -121,9 +121,9 @@ El servidor estará disponible en [http://localhost:3000](http://localhost:3000)
 
 - **POST /api/complaints**  
   Crea una nueva queja.  
-  Parámetros:  
-    - `texto`: Texto de la queja (10-2000 caracteres)
-    - `id_entidad`: ID de la entidad seleccionada
+  Parámetros:
+  - `texto`: Texto de la queja (10-2000 caracteres)
+  - `id_entidad`: ID de la entidad seleccionada
 
 - **GET /api/complaints?entidadId=ID&page=1&limit=10**  
   Devuelve la lista paginada de quejas asociadas a una entidad.
@@ -159,4 +159,3 @@ MIT
 
 **Contacto:**  
 Para dudas o sugerencias, abre un issue o contacta a través de los canales habituales.
-

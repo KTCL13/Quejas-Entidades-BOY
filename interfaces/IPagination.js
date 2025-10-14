@@ -9,32 +9,30 @@
  * @returns {Promise<object>} Un objeto con los datos paginados y la información de paginación.
  */
 exports.paginate = async ({ model, page, pageSize, options = {} }) => {
-    try {
-        const currentPage = parseInt(page, 10) > 0 ? parseInt(page, 10) : 1;
-        const limit = parseInt(pageSize, 10) > 0 ? parseInt(pageSize, 10) : 10;
-        const offset = (currentPage - 1) * limit;
+  try {
+    const currentPage = parseInt(page, 10) > 0 ? parseInt(page, 10) : 1;
+    const limit = parseInt(pageSize, 10) > 0 ? parseInt(pageSize, 10) : 10;
+    const offset = (currentPage - 1) * limit;
 
-        const { count, rows } = await model.findAndCountAll({
-            ...options,
-            offset,
-            limit,
-        });
+    const { count, rows } = await model.findAndCountAll({
+      ...options,
+      offset,
+      limit,
+    });
 
+    const totalPages = Math.ceil(count / limit);
 
-        const totalPages = Math.ceil(count / limit);
-
-
-        return {
-            data: rows,
-            pagination: {
-                totalItems: count,
-                totalPages,
-                currentPage,
-                pageSize: limit,
-            },
-        };
-    } catch (err) {
-        console.error('Error en la función de paginación:', err);
-        throw err;
-    }
+    return {
+      data: rows,
+      pagination: {
+        totalItems: count,
+        totalPages,
+        currentPage,
+        pageSize: limit,
+      },
+    };
+  } catch (err) {
+    console.error('Error en la función de paginación:', err);
+    throw err;
+  }
 };
