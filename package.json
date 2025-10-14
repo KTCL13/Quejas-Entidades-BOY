@@ -12,7 +12,9 @@
     "db:destroy": "docker-compose down -v",
     "db:setup": "docker-compose up -d && node -e \"setTimeout(() => {}, 5000)\" && npm run db:migrate && npm run db:seed",
     "db:migrate": "npx sequelize-cli db:migrate",
-    "db:seed": "npx sequelize-cli db:seed:all"
+    "db:seed": "npx sequelize-cli db:seed:all",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check ."
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.6",
@@ -41,6 +43,7 @@
     "globals": "^16.4.0",
     "jest": "^30.1.3",
     "nodemon": "^3.1.10",
+    "prettier": "3.6.2",
     "supertest": "^7.1.4"
   }
 }
