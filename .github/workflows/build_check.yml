@@ -53,6 +53,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Code Format - Run Prettier Check
+        run: npm run prettier:check
+
       # 4. Ejecuta el linter para verificar la calidad y estilo del código
       - name: Code Quality - Run Linter
         run: npm run lint
