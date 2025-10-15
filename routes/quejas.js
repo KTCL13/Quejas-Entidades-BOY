@@ -185,12 +185,10 @@ router.put('/change-state/:id', async (req, res) => {
       'Error en /api/complaints/cambiar-estado:',
       err.message || err
     );
-    res
-      .status(500)
-      .json({
-        error: 'Error al cambiar el estado de la queja.',
-        details: err.message,
-      });
+    res.status(500).json({
+      error: 'Error al cambiar el estado de la queja.',
+      details: err.message,
+    });
   }
 });
 
@@ -223,12 +221,10 @@ router.get('/data/states', async (req, res) => {
     res.json(states);
   } catch (err) {
     console.error('Error en /api/complaints/states:', err.message || err);
-    res
-      .status(500)
-      .json({
-        error: 'Error al obtener los estados de las quejas.',
-        details: err.message,
-      });
+    res.status(500).json({
+      error: 'Error al obtener los estados de las quejas.',
+      details: err.message,
+    });
   }
 });
 
