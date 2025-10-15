@@ -1,14 +1,14 @@
-"use strict";
+'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface) {
     const entitiesToSeed = [
-      { name: "Secretaría De Educación De Boyacá" },
-      { name: "Secretaría de Ambiente y Desarrollo Sostenible" },
-      { name: "Sistema de Atención al Ciudadano" },
-      { name: "Secretaría de Planeación" },
-      { name: "Secretaría de TIC y Gobierno Abierto" },
+      { name: 'Secretaría De Educación De Boyacá' },
+      { name: 'Secretaría de Ambiente y Desarrollo Sostenible' },
+      { name: 'Sistema de Atención al Ciudadano' },
+      { name: 'Secretaría de Planeación' },
+      { name: 'Secretaría de TIC y Gobierno Abierto' },
     ];
 
     const entityNames = entitiesToSeed.map((e) => e.name);
@@ -28,11 +28,11 @@ module.exports = {
     );
 
     if (entitiesToInsert.length > 0) {
-      await queryInterface.bulkInsert("entities", entitiesToInsert, {});
+      await queryInterface.bulkInsert('entities', entitiesToInsert, {});
     }
   },
 
   async down(queryInterface) {
-    await queryInterface.bulkDelete("entities", null, {});
+    await queryInterface.bulkDelete('entities', null, {});
   },
 };

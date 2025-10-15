@@ -20,11 +20,13 @@
 ## ✅ ¿Cómo se ha probado?
 
 **Pruebas manuales:**
+
 1. Inicié el servidor con `npm start`.
 2. Navegué a la ruta `/ejemplo`.
 3. Verifiqué que el nuevo componente se renderiza correctamente.
 
 **Pruebas automáticas:**
+
 - Ejecuté `npm test` y todos los tests pasaron exitosamente.
 
 ## Notas Adicionales para el Revisor

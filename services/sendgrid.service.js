@@ -1,6 +1,6 @@
-require("dotenv").config();
-const sgMail = require("@sendgrid/mail");
-const IMailService = require("../interfaces/IMailService"); // Ajusta la ruta a tu interfaz
+require('dotenv').config();
+const sgMail = require('@sendgrid/mail');
+const IMailService = require('../interfaces/IMailService'); // Ajusta la ruta a tu interfaz
 
 /**
  * Implementación del servicio de correo utilizando la API de SendGrid.
@@ -28,7 +28,7 @@ class SendGridService extends IMailService {
     const msg = {
       to,
       from: {
-        name: "Quejas Boyacá",
+        name: 'Quejas Boyacá',
         email: process.env.EMAIL_FROM,
       },
       subject,
@@ -41,13 +41,13 @@ class SendGridService extends IMailService {
       return response[0];
     } catch (error) {
       console.error(
-        "❌ Error al enviar correo con la API de SendGrid:",
+        '❌ Error al enviar correo con la API de SendGrid:',
         error.message
       );
       if (error.response) {
         console.error(error.response.body);
       }
-      throw new Error("Fallo en el envío del correo.");
+      throw new Error('Fallo en el envío del correo.');
     }
   }
 }

@@ -8,22 +8,21 @@ module.exports = {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    dialect: 'postgres'
+    dialect: 'postgres',
   },
   // Configuración para el entorno de pruebas (usado por CI/GitHub Actions)
   test: {
-    use_env_variable: "DATABASE_URL", // Le dice a Sequelize-CLI que use la URL del entorno de CI
-    dialect: 'postgres'
-  }, production: {
-
-    use_env_variable: "DATABASE_URL",
+    use_env_variable: 'DATABASE_URL', // Le dice a Sequelize-CLI que use la URL del entorno de CI
+    dialect: 'postgres',
+  },
+  production: {
+    use_env_variable: 'DATABASE_URL',
     dialect: 'postgres',
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false
-      }
-    }
-  }
+        rejectUnauthorized: false,
+      },
+    },
+  },
 };
-

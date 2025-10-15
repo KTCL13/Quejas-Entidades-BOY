@@ -1,15 +1,16 @@
 const { Complaint } = require('../models/Complaint');
 const { Entity } = require('../models/Entity');
 
-
 async function getComplaintById(complaintId) {
   try {
     const complaint = await Complaint.findOne({
       where: { id: complaintId, is_deleted: false },
-      include: [{
-        model: Entity,
-        attributes: ['id', 'name']
-      }],
+      include: [
+        {
+          model: Entity,
+          attributes: ['id', 'name'],
+        },
+      ],
     });
     return complaint;
   } catch (error) {
@@ -17,7 +18,6 @@ async function getComplaintById(complaintId) {
     throw new Error('Error al obtener la queja por ID');
   }
 }
-
 
 async function updateComplaintState(complaintId, newState) {
   try {
@@ -36,7 +36,7 @@ async function updateComplaintState(complaintId, newState) {
   }
 }
 
-module.exports = { 
+module.exports = {
   getComplaintById,
-  updateComplaintState
+  updateComplaintState,
 };

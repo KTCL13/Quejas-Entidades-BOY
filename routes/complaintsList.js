@@ -12,24 +12,20 @@ router.get('/', async (req, res) => {
     complaints: [],
     pages: [],
     currentPage: 1,
-    activePage: 'lista'
+    activePage: 'lista',
   });
 });
-
 
 router.get('/complaint/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-
     const complaint = await getComplaintById(id);
-
 
     res.render('comment', {
       complaint,
-      activePage: 'detalle'
+      activePage: 'detalle',
     });
-
   } catch (error) {
     console.error('Error al obtener los datos de la queja:', error);
     res.status(500).send('Error interno del servidor');

@@ -13,10 +13,8 @@ const { loadEntidades } = require('./services/quejas.service');
 
 var app = express();
 
-
 app.set('views', path.join(__dirname, './views'));
 app.set('view engine', 'pug');
-
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -27,7 +25,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.static(path.join(__dirname, 'views')));
 
-
 app.use('/api/complaints', complaintsRouter);
 app.use('/api/reports', reportesRouter);
 app.use('/', complaintsListRouter);
@@ -35,11 +32,9 @@ app.use('/api/comments', commentsRouter);
 
 loadEntidades();
 
-
 app.use(function (req, res, next) {
   next(createError(404));
 });
-
 
 app.use(function (err, req, res) {
   res.status(err.status || 500);
@@ -49,18 +44,22 @@ app.use(function (err, req, res) {
   if (isApi || wantsJson) {
     return res.json({
       message: err.message,
-      error: req.app.get('env') === 'development' ? err : {}
+      error: req.app.get('env') === 'development' ? err : {},
     });
   }
 
-
   res.render(
     'error',
-    { message: err.message, error: req.app.get('env') === 'development' ? err : {} },
+    {
+      message: err.message,
+      error: req.app.get('env') === 'development' ? err : {},
+    },
     function (renderErr, html) {
       if (renderErr) {
-
-        console.error('No se pudo renderizar la vista de error:', renderErr.message);
+        console.error(
+          'No se pudo renderizar la vista de error:',
+          renderErr.message
+        );
         return res.send(`<h1>Error</h1><pre>${err.message}</pre>`);
       }
       res.send(html);

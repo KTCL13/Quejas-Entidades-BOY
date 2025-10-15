@@ -32,7 +32,6 @@ async function startServer() {
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);
-
   } catch (error) {
     console.error('No se pudo conectar a la base de datos:', error);
     process.exit(1);
@@ -70,9 +69,7 @@ function onError(error) {
     throw error;
   }
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+  var bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
@@ -95,9 +92,7 @@ function onError(error) {
 
 function onListening() {
   var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
+  var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('Listening on ' + bind);
   console.log('Servidor corriendo en http://localhost:' + port);
 }
