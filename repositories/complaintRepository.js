@@ -49,8 +49,9 @@ exports.createComplaint = async ({ description, entity_id }) => {
   }
 };
 
+
 module.exports = {
   getComplaintById,
   updateComplaintState,
-  createComplaint,
+  createComplaint
 };
