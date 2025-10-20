@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  .container.mt-5
+    .row.justify-content-center
+      .col-md-6
+        .card.shadow-sm
+          .card-body
+            h3.text-center.fw-bold.mb-4 Iniciar Sesión
+            form(action="/login" method="POST")
+              .mb-3
+                label.form-label(for="username") Usuario
+                input#username.form-control(type="text", name="username", placeholder="Ingresa tu usuario", required)
+              .mb-3
+                label.form-label(for="password") Contraseña
+                input#password.form-control(type="password", name="password", placeholder="Ingresa tu contraseña", required)
+              .d-grid
+                button.btn.btn-primary.btn-block(type="submit") Ingresar
+            .mt-3.text-center
+              a.text-decoration-none(href="/") ← Volver al inicio
