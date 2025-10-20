@@ -36,25 +36,21 @@ async function updateComplaintState(complaintId, newState) {
   }
 }
 
-async function deleteComplaint(complaintId) {
+async function createComplaint({ description, entity_id }) {
   try {
-    const complaint = await Complaint.findByPk(complaintId);
-    if (!complaint) {
-      return null;
-    }
-
-    complaint.is_deleted = true;
-    await complaint.save();
-
-    return complaint;
+    const nuevaQueja = await Complaint.create({
+      description,
+      entity_id,
+    });
+    return nuevaQueja;
   } catch (error) {
-    console.error('Error al eliminar la queja:', error);
-    throw new Error('Error al eliminar la queja');
+    console.error('Error en createComplaint (repository):', error);
+    throw error;
   }
 }
 
 module.exports = {
   getComplaintById,
   updateComplaintState,
-  deleteComplaint,
+  createComplaint,
 };
