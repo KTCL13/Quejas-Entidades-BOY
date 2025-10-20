@@ -47,10 +47,6 @@ describe('Integración completa GET /api/complaint/:id', () => {
     }
   });
 
-  afterAll(async () => {
-    await sequelize.close();
-  });
-
   it('retorna comentarios reales de la base de datos', async () => {
     const res = await request(app).get('/api/complaint/123');
 
@@ -64,5 +60,70 @@ describe('Integración completa GET /api/complaint/:id', () => {
 
     expect(res.statusCode).toBe(400);
     expect(res.body.errors[0].message).toBe('ID de queja inválido');
+  });
+});
+
+describe('Integración completa POST /api/complaint/:id', () => {
+  beforeAll(async () => {
+    try {
+      await sequelize.authenticate();
+      await sequelize.sync({ force: true });
+    } catch (error) {
+      console.error('Error connecting to the database:', error);
+      throw error;
+    }
+  });
+
+  beforeEach(async () => {
+    await Entity.destroy({ truncate: true, cascade: true, force: true });
+    await Comment.destroy({ truncate: true, cascade: true, force: true });
+    await Complaint.destroy({ truncate: true, cascade: true, force: true });
+    try {
+      const entity = await Entity.create({
+        id: 1,
+        name: 'Entidad de prueba',
+      });
+      await Complaint.create({
+        id: 123,
+        description: 'Queja de prueba',
+        entity_id: entity.id,
+      });
+    } catch (error) {
+      console.error('Error creating test data:', error);
+      throw error;
+    }
+  });
+
+  afterAll(async () => {
+    await sequelize.close();
+  });
+
+  it('crea un comentario válido', async () => {
+    const res = await request(app)
+      .post('/api/complaint/123')
+      .send({ message: 'Nuevo comentario de prueba' });
+    expect(res.statusCode).toBe(201);
+    expect(res.body).toHaveProperty('message', 'Nuevo comentario de prueba');
+
+    const commentInDb = await Comment.findOne({
+      where: { complaint_id: 123, message: 'Nuevo comentario de prueba' },
+    });
+    expect(commentInDb).not.toBeNull();
+  });
+
+  it('retorna 400 si el ID no es numérico', async () => {
+    const res = await request(app)
+      .post('/api/complaint/abc')
+      .send({ message: 'Comentario inválido' });
+    expect(res.statusCode).toBe(400);
+    expect(res.body.errors[0].message).toBe('ID de queja inválido');
+  });
+
+  it('retorna 400 si el mensaje está vacío', async () => {
+    const res = await request(app)
+      .post('/api/complaint/123')
+      .send({ message: '' });
+    expect(res.statusCode).toBe(400);
+    expect(res.body.errors[0].message).toBe('El mensaje no puede estar vacío');
   });
 });
