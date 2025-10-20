@@ -1,20 +1,19 @@
 const express = require('express');
 const router = express.Router();
+const { createCommentByComplaintId } = require('../services/comment.service');
+const { param } = require('express-validator');
+const { validateRequest } = require('../middleware/validateRequest');
 const {
-  getCommentsByComplaintId,
-  createCommentByComplaintId,
-} = require('../services/comment.service');
+  getCommentsByComplaintIdController,
+} = require('../controllers/commentsController');
 
 //Get /api/complaint/:id
-router.get('/complaint/:id', async (req, res) => {
-  const complaintId = req.params.id;
-  if (!isNaN(complaintId)) {
-    var comments = await getCommentsByComplaintId(complaintId);
-    res.json(comments);
-  } else {
-    res.status(400).send('ID de queja inválido');
-  }
-});
+router.get(
+  '/complaint/:id',
+  param('id').isNumeric().withMessage('ID de queja inválido'),
+  validateRequest,
+  getCommentsByComplaintIdController
+);
 
 router.post('/complaint/:id', async (req, res) => {
   const complaintId = req.params.id;
