@@ -1,7 +1,6 @@
 const commentRepository = require('../repositories/commentRepository');
 const { Complaint } = require('../models');
 
-
 exports.getCommentsByComplaintId = async (complaintId) => {
   try {
     const complaint = await Complaint.findByPk(complaintId);
@@ -16,7 +15,6 @@ exports.getCommentsByComplaintId = async (complaintId) => {
     throw new Error('Error al obtener los comentarios');
   }
 };
-
 
 exports.createCommentByComplaintId = async (complaintId, content) => {
   try {
