@@ -5,7 +5,7 @@ const { getEntitiesCache } = require('../config/cache');
 const {
   createQueja,
   getQuejasPaginadasForEntity,
-  getComplaintsReportByEntity,
+  getComplaintReportByEntity,
   deleteComplaint,
   changeComplaintState,
   getComplaintById,
@@ -143,7 +143,7 @@ async function checkAdminPass(req) {
 // GET /api/complaints/quejas-por-entidad → reporte
 router.get('/quejas-por-entidad', async (req, res) => {
   try {
-    const rows = await getComplaintsReportByEntity();
+    const rows = await getComplaintReportByEntity();
     res.json(rows);
   } catch (err) {
     console.error(
