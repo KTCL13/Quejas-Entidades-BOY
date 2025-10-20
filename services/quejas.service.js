@@ -41,23 +41,26 @@ exports.createQueja = async ({ texto, entity_id }) => {
   if (!texto || texto.trim().length < 10 || texto.trim().length > 2000) {
     throw new Error('La queja debe tener entre 10 y 2000 caracteres');
   }
-
   const entidad = await Entity.findByPk(entity_id);
   if (!entidad) {
     throw new Error('La entidad especificada no existe');
   }
 
-  const nuevaQueja = await Complaint.create({
-    description: texto.trim(),
-    entity_id,
-  });
-
-  return nuevaQueja;
+  try {
+    const nuevaQueja = await complaintRepository.createComplaint({
+      description: texto.trim(),
+      entity_id,
+    });
+    return nuevaQueja;
+  } catch (error) {
+    console.error('Error al crear la queja:', error);
+    throw new Error('Error al crear la queja');
+  }
 };
 
-exports.getReporteQuejasPorEntidad = async () => {
+exports.getComplaintReportByEntity = async () => {
   try {
-    const res = await Entity.findAll({
+    const result = await Entity.findAll({
       attributes: [
         'id',
         'name',
@@ -66,7 +69,7 @@ exports.getReporteQuejasPorEntidad = async () => {
             'COUNT',
             Complaint.sequelize.col('Complaints.id')
           ),
-          'total_quejas',
+          'total_complaints',
         ],
       ],
       include: [
@@ -76,12 +79,12 @@ exports.getReporteQuejasPorEntidad = async () => {
         },
       ],
       group: ['Entity.id'],
-      order: [[Complaint.sequelize.literal('total_quejas'), 'DESC']],
+      order: [[Complaint.sequelize.literal('total_complaints'), 'DESC']],
     });
-    return res;
-  } catch (err) {
-    console.error('Error generando reporte de quejas por entidad:', err);
-    throw err;
+    return result;
+  } catch (error) {
+    console.error('Error generando reporte de quejas por entidad:', error);
+    throw error;
   }
 };
 
