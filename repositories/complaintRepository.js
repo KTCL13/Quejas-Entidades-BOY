@@ -82,6 +82,5 @@ async function getPaginatedComplaintsForEntity(entidadId, page, limit) {
 module.exports = {
   getComplaintById,
   updateComplaintState,
-  deleteComplaint,
   getPaginatedComplaintsForEntity,
 };
