@@ -1,5 +1,5 @@
-const { Complaint } = require('../models/Complaint');
-const { Entity } = require('../models/Entity');
+const { Complaint, Entity } = require('../models');
+const { paginate } = require('../interfaces/IPagination');
 
 async function getComplaintById(complaintId) {
   try {
@@ -53,8 +53,39 @@ async function deleteComplaint(complaintId) {
   }
 }
 
+async function getPaginatedComplaintsForEntity(entidadId, page, limit) {
+  try {
+    const queryOptions = {
+      where: {
+        entity_id: entidadId,
+        is_deleted: false,
+      },
+      include: [
+        {
+          model: Entity,
+          attributes: ['name'],
+        },
+      ],
+      order: [['id', 'DESC']],
+    };
+
+    const paginatedResult = await paginate({
+      model: Complaint,
+      page,
+      pageSize: limit,
+      options: queryOptions,
+    });
+
+    return paginatedResult;
+  } catch (error) {
+    console.error('Error al obtener quejas paginadas por entidad:', error);
+    throw new Error('Error al obtener quejas paginadas por entidad');
+  }
+}
+
 module.exports = {
   getComplaintById,
   updateComplaintState,
   deleteComplaint,
+  getPaginatedComplaintsForEntity,
 };
