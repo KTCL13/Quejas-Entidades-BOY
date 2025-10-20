@@ -113,7 +113,6 @@ exports.deleteComplaint = async (complaintId) => {
   }
 };
 
-
 exports.changeComplaintState = async (complaintId, newState) => {
   try {
     const updatedComplaint = await complaintRepository.updateComplaintState(

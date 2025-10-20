@@ -56,5 +56,5 @@ async function deleteComplaint(complaintId) {
 module.exports = {
   getComplaintById,
   updateComplaintState,
-  deleteComplaint
-}
+  deleteComplaint,
+};
