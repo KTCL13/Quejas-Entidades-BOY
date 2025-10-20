@@ -56,18 +56,21 @@ exports.createQueja = async ({ texto, entity_id }) => {
   if (!texto || texto.trim().length < 10 || texto.trim().length > 2000) {
     throw new Error('La queja debe tener entre 10 y 2000 caracteres');
   }
-
   const entidad = await Entity.findByPk(entity_id);
   if (!entidad) {
     throw new Error('La entidad especificada no existe');
   }
 
-  const nuevaQueja = await Complaint.create({
-    description: texto.trim(),
-    entity_id,
-  });
-
-  return nuevaQueja;
+  try {
+    const nuevaQueja = await complaintRepository.createComplaint({
+      description: texto.trim(),
+      entity_id,
+    });
+    return nuevaQueja;
+  } catch (error) {
+    console.error('Error al crear la queja:', error);
+    throw new Error('Error al crear la queja');
+  }
 };
 
 exports.getReporteQuejasPorEntidad = async () => {
