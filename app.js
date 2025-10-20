@@ -31,6 +31,9 @@ app.use('/', complaintsListRouter);
 app.use('/api/comments', commentsRouter);
 
 loadEntidades();
+app.get('/login', (req, res) => {
+  res.render('login', { activePage: '' });
+});
 
 app.use(function (req, res, next) {
   next(createError(404));
