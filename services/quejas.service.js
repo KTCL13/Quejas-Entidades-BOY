@@ -1,34 +1,19 @@
 const { Complaint, Entity } = require('../models');
 const { setEntitiesCache } = require('../config/cache');
 const COMPLAINT_STATES = require('../config/constants');
-const { paginate } = require('../interfaces/IPagination');
 const complaintRepository = require('../repositories/complaintRepository');
 
 exports.getQuejasPaginadasForEntity = async (entidadId, page, limit) => {
   try {
-    const queryOptions = {
-      where: {
-        entity_id: entidadId,
-        is_deleted: false,
-      },
-      include: [
-        {
-          model: Entity,
-          attributes: ['name'],
-        },
-      ],
-      order: [['id', 'DESC']],
-    };
-
-    const paginatedResult = await paginate({
-      model: Complaint,
-      page,
-      pageSize: limit,
-      options: queryOptions,
-    });
+    const paginatedResult =
+      await complaintRepository.getPaginatedComplaintsForEntity(
+        entidadId,
+        page,
+        limit
+      );
     return paginatedResult;
   } catch (error) {
-    console.error(error);
+    console.error('Error en getQuejasPaginadasForEntity:', error);
     throw new Error('Error al obtener las quejas');
   }
 };
