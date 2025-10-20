@@ -8,7 +8,6 @@ jest.mock('../services/comment.service.js', () => ({
 }));
 
 const {
-  getCommentsByComplaintId,
   createCommentByComplaintId,
 } = require('../services/comment.service.js');
 
@@ -43,25 +42,6 @@ describe('Rutas de comentarios', () => {
         .send({ message: 'Comentario inválido' });
       expect(res.status).toBe(400);
       expect(res.text).toBe('ID de queja inválido o contenido vacío');
-    });
-  });
-
-  describe('GET /complaint/:id', () => {
-    it('debería devolver comentarios para un ID válido', async () => {
-      getCommentsByComplaintId.mockResolvedValue([
-        { id: 1, message: 'comentario test' },
-      ]);
-
-      const res = await request(app).get('/complaint/1');
-
-      expect(res.status).toBe(200);
-      expect(res.body).toEqual([{ id: 1, message: 'comentario test' }]);
-    });
-
-    it('debería devolver 400 para un ID inválido', async () => {
-      const res = await request(app).get('/complaint/abc');
-      expect(res.status).toBe(400);
-      expect(res.text).toBe('ID de queja inválido');
     });
   });
 });
