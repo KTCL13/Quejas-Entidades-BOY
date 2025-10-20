@@ -36,7 +36,7 @@ async function updateComplaintState(complaintId, newState) {
   }
 }
 
-exports.createComplaint = async ({ description, entity_id }) => {
+async function createComplaint({ description, entity_id }) {
   try {
     const nuevaQueja = await Complaint.create({
       description,
@@ -47,7 +47,7 @@ exports.createComplaint = async ({ description, entity_id }) => {
     console.error('Error en createComplaint (repository):', error);
     throw error;
   }
-};
+}
 
 module.exports = {
   getComplaintById,
