@@ -36,7 +36,25 @@ async function updateComplaintState(complaintId, newState) {
   }
 }
 
+async function deleteComplaint(complaintId) {
+  try {
+    const complaint = await Complaint.findByPk(complaintId);
+    if (!complaint) {
+      return null;
+    }
+
+    complaint.is_deleted = true;
+    await complaint.save();
+
+    return complaint;
+  } catch (error) {
+    console.error('Error al eliminar la queja:', error);
+    throw new Error('Error al eliminar la queja');
+  }
+}
+
 module.exports = {
   getComplaintById,
   updateComplaintState,
+  deleteComplaint,
 };

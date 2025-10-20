@@ -102,9 +102,8 @@ exports.getReporteQuejasPorEntidad = async () => {
 
 exports.deleteComplaint = async (complaintId) => {
   try {
-    const complaint = await Complaint.findByPk(complaintId);
-    if (complaint) {
-      await complaint.update({ is_deleted: true });
+    const deleted = await complaintRepository.deleteComplaint(complaintId);
+    if (deleted) {
       return true;
     }
     return false;
