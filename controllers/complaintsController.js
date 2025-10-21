@@ -1,4 +1,4 @@
-const getComplaintById = require('../services/complaint.service');
+const getComplaintById = require('../services/quejas.service');
 
 exports.getComplaintByIdController = async (req, res, next) => {
   try {

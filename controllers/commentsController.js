@@ -3,7 +3,7 @@ const {
   createCommentByComplaintId,
 } = require('../services/comment.service');
 
-export const getCommentsByComplaintIdController = async (req, res, next) => {
+exports.getCommentsByComplaintIdController = async (req, res, next) => {
   try {
     const complaintId = req.params.id;
     const comments = await getCommentsByComplaintId(complaintId);
@@ -13,7 +13,7 @@ export const getCommentsByComplaintIdController = async (req, res, next) => {
   }
 };
 
-export const createCommentByComplaintIdController = async (req, res, next) => {
+exports.createCommentByComplaintIdController = async (req, res, next) => {
   try {
     const complaintId = req.params.id;
     const { message } = req.body;
