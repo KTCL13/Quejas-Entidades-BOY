@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const { getEntitiesCache } = require('../config/cache');
-const { validateComplaintState } = require('../middleware/validateComplaintState');
+const {
+  validateComplaintState,
+} = require('../middleware/validateComplaintState');
 const {
   createQueja,
   getQuejasPaginadasForEntity,
@@ -178,7 +180,6 @@ router.put('/change-state/:id', validateComplaintState, async (req, res) => {
     });
   }
 });
-
 
 //GET /api/complaints/:id
 router.get('/:id', async (req, res) => {
