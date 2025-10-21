@@ -5,33 +5,66 @@ html
     meta(charset="utf-8")
     meta(name="viewport" content="width=device-width, initial-scale=1")
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css")
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css")
     script(src="https://www.google.com/recaptcha/api.js?render=6LeBKKkrAAAAAObCxLb511gIotGRecWMZZOEZhRg")
-  body.d-flex.flex-column.min-vh-100
-    nav.navbar.navbar-expand-lg.navbar-light.bg-light.shadow-sm
+
+  body
+   
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light.shadow-sm.border-bottom
       .container
-        a.navbar-brand.fw-bold(href="#") Quejas Entidades Públicas de Boyacá
+        a.navbar-brand.fw-semibold.text-primary(href="#") 
+          i.bi.bi-building.me-2
+          | Sistema de Quejas - Boyacá
+
         button.navbar-toggler(type="button", data-bs-toggle="collapse", data-bs-target="#navbarNav")
           span.navbar-toggler-icon
+
         #navbarNav.collapse.navbar-collapse
           ul.navbar-nav.ms-auto
             li.nav-item
-              a.nav-link(href='/' class=(activePage === 'lista' ? 'active fw-bold text-dark' : '')) Lista de Quejas
+              a.nav-link(href='/' class=(activePage === 'lista' ? 'active fw-semibold text-dark' : '')) 
+                i.bi.bi-list-ul.me-1
+                | Lista de Quejas
             li.nav-item
-              a.nav-link(href='/api/complaints/registrar' class=(activePage === 'registrar' ? 'active fw-bold text-dark' : '')) Registrar Queja
+              a.nav-link(href='/api/complaints/registrar' class=(activePage === 'registrar' ? 'active fw-semibold text-dark' : ''))
+                i.bi.bi-pencil-square.me-1
+                | Registrar Queja
             li.nav-item
-              a.nav-link#linkReporte(href='/api/reports' class=(activePage === 'reportes' ? 'active fw-bold text-dark' : '')) Número de quejas por entidad
+              a.nav-link#linkReporte(href='/api/reports' class=(activePage === 'reportes' ? 'active fw-semibold text-dark' : ''))
+                i.bi.bi-bar-chart.me-1
+                | Reportes
 
-    // Contenido principal
-    .container.mt-4.mb-5
+          
+          ul.navbar-nav.ms-3
+            li.nav-item.dropdown
+              if user
+                a.nav-link.dropdown-toggle.text-dark.fw-semibold(href='#', id='userMenu', role='button', data-bs-toggle='dropdown')
+                  i.bi.bi-person-circle.me-1
+                  | Usuario activo
+                ul.dropdown-menu.dropdown-menu-end(aria-labelledby='userMenu')
+                  li.text-center.text-muted.small.px-3.py-1
+                    | #{user.nombre || user.email}
+                  li
+                    hr.dropdown-divider
+                  li
+                    a.dropdown-item.text-danger(href='/logout')
+                      i.bi.bi-box-arrow-right.me-2
+                      | Cerrar sesión
+              else
+                a.btn.btn-outline-primary.fw-semibold(href='/login')
+                  i.bi.bi-box-arrow-in-right.me-1
+                  | Iniciar sesión
+
+    
+    .container.mt-4
       block content
 
-    // Footer (nuevo)
-    footer.mt-auto.py-3.bg-light.text-center.border-top
-      small.text-muted © 2025 Gobernación de Boyacá — Todos los derechos reservados.
+    
+    footer.bg-light.text-center.py-3.mt-5.border-top
+      small.text-muted © 2025 Gobernación de Boyacá · Sistema de Quejas y Reclamos
 
+    
     script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js")
-
-    // Script para enviar el correo al entrar en reportes
     script.
       document.addEventListener('DOMContentLoaded', () => {
         const linkReporte = document.getElementById('linkReporte');
@@ -41,7 +74,7 @@ html
               await fetch('/api/reports/ver');
               console.log("Correo enviado automáticamente al entrar en reportes");
             } catch (err) {
-              console.error(" Error al enviar correo automático:", err);
+              console.error("Error al enviar correo automático:", err);
             }
           });
         }
