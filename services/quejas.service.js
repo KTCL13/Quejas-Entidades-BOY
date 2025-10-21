@@ -37,8 +37,12 @@ exports.getEntidades = async () => {
   }
 };
 
-exports.createQueja = async ({ texto, entity_id }) => {
-  if (!texto || texto.trim().length < 10 || texto.trim().length > 2000) {
+exports.createComplaint = async ({ description, entity_id }) => {
+  if (
+    !description ||
+    description.trim().length < 10 ||
+    description.trim().length > 2000
+  ) {
     throw new Error('La queja debe tener entre 10 y 2000 caracteres');
   }
   const entidad = await Entity.findByPk(entity_id);
@@ -47,11 +51,11 @@ exports.createQueja = async ({ texto, entity_id }) => {
   }
 
   try {
-    const nuevaQueja = await complaintRepository.createComplaint({
-      description: texto.trim(),
+    const newComplaint = await complaintRepository.createComplaint({
+      description: description.trim(),
       entity_id,
     });
-    return nuevaQueja;
+    return newComplaint;
   } catch (error) {
     console.error('Error al crear la queja:', error);
     throw new Error('Error al crear la queja');
