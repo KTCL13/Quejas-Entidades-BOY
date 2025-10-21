@@ -3,7 +3,6 @@ const router = express.Router();
 
 const { getEntitiesCache } = require('../config/cache');
 const {
-  createComplaint,
   getQuejasPaginadasForEntity,
   getComplaintReportByEntity,
   deleteComplaint,
@@ -12,10 +11,11 @@ const {
 } = require('../services/quejas.service');
 const { verifyRecaptcha } = require('../middleware/recaptcha');
 const mailService = require('../services/sendgrid.service');
-const { param } = require('express-validator');
+const { param, body } = require('express-validator');
 const { validateRequest } = require('../middleware/validateRequest');
 const {
   getComplaintByIdController,
+  createComplaintController,
 } = require('../controllers/complaintsController');
 
 // GET /registrar → renderiza el formulario con entidades
@@ -29,26 +29,15 @@ router.get('/registrar', async (req, res) => {
 });
 
 // POST /api/complaints → crea una nueva queja
-router.post('/', async (req, res) => {
-  try {
-    const { texto, entity_id } = req.body;
-
-    if (!texto || texto.trim().length < 10 || texto.trim().length > 2000) {
-      return res
-        .status(400)
-        .json({ error: 'La queja debe tener entre 10 y 2000 caracteres.' });
-    }
-    if (!entity_id || isNaN(entity_id)) {
-      return res
-        .status(400)
-        .json({ error: 'Debe seleccionar una entidad válida.' });
-    }
-    const queja = await createComplaint({ description: texto, entity_id });
-    res.status(201).json({ message: 'Queja registrada', data: queja });
-  } catch {
-    res.status(500).json({ error: 'Error al registrar la queja.' });
-  }
-});
+router.post(
+  '/',
+  body('description')
+    .isLength({ min: 10, max: 2000 })
+    .withMessage('La descripción debe tener entre 10 y 2000 caracteres'),
+  body('entity_id').isInt().withMessage('Entity_id debe ser un entero'),
+  validateRequest,
+  createComplaintController
+);
 
 // Controlador para obtener quejas paginadas
 async function obtenerQuejas(req, res) {
