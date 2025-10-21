@@ -11,11 +11,15 @@ const {
   getComplaintReportByEntity,
   deleteComplaint,
   changeComplaintState,
-  getComplaintById,
   getComplaintStates,
 } = require('../services/quejas.service');
 const { verifyRecaptcha } = require('../middleware/recaptcha');
 const mailService = require('../services/sendgrid.service');
+const { param } = require('express-validator');
+const { validateRequest } = require('../middleware/validateRequest');
+const {
+  getComplaintByIdController,
+} = require('../controllers/complaintsController');
 
 // GET /registrar → renderiza el formulario con entidades
 router.get('/registrar', async (req, res) => {
@@ -182,26 +186,12 @@ router.put('/change-state/:id', validateComplaintState, async (req, res) => {
 });
 
 //GET /api/complaints/:id
-router.get('/:id', async (req, res) => {
-  try {
-    const complaintId = parseInt(req.params.id, 10);
-    if (isNaN(complaintId)) {
-      return res.status(400).json({ error: 'ID de queja inválido.' });
-    }
-
-    const complaint = await getComplaintById(complaintId);
-    if (complaint) {
-      res.json(complaint);
-    } else {
-      res.status(404).json({ error: 'Queja no encontrada.' });
-    }
-  } catch (err) {
-    console.error('Error en /api/complaints/:id:', err.message || err);
-    res
-      .status(500)
-      .json({ error: 'Error al obtener la queja.', details: err.message });
-  }
-});
+router.get(
+  '/:id',
+  param('id').isNumeric().withMessage('ID de queja inválido'),
+  validateRequest,
+  getComplaintByIdController
+);
 
 // GET /api/complaints/states
 router.get('/data/states', async (req, res) => {
