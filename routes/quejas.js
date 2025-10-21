@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { getEntitiesCache } = require('../config/cache');
+const { validateComplaintState } = require('../middleware/validateComplaintState');
 const {
   createQueja,
   getQuejasPaginadasForEntity,
@@ -157,40 +158,27 @@ router.get('/quejas-por-entidad', async (req, res) => {
 });
 
 // PUT /api/complaints/cambiar-estado
-router.put('/change-state/:id', async (req, res) => {
+router.put('/change-state/:id', validateComplaintState, async (req, res) => {
   try {
     const { newState } = req.body;
     const id = req.params.id;
 
-    if (!id || !newState) {
-      return res
-        .status(400)
-        .json({ error: 'ID de queja y nuevo estado son requeridos.' });
-    }
-
-    if (!(await checkAdminPass(req))) {
-      return res
-        .status(401)
-        .json({ error: 'Acceso denegado. Credenciales inválidas.' });
-    }
-
     const result = await changeComplaintState(id, newState);
+
     if (result) {
       res.json({ message: 'Estado de la queja actualizado correctamente.' });
     } else {
       res.status(404).json({ error: 'Queja no encontrada.' });
     }
   } catch (err) {
-    console.error(
-      'Error en /api/complaints/cambiar-estado:',
-      err.message || err
-    );
+    console.error('Error en /api/complaints/change-state:', err.message || err);
     res.status(500).json({
       error: 'Error al cambiar el estado de la queja.',
       details: err.message,
     });
   }
 });
+
 
 //GET /api/complaints/:id
 router.get('/:id', async (req, res) => {
