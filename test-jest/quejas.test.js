@@ -7,7 +7,7 @@ process.env.ADMIN_PASS = 'admin123';
 const router = require('../routes/quejas.js');
 const { getEntitiesCache } = require('../config/cache.js');
 const {
-  createQueja,
+  createComplaint,
   getQuejasPaginadasForEntity,
   deleteComplaint,
 } = require('../services/quejas.service.js');
@@ -48,7 +48,7 @@ describe('Rutas de quejas', () => {
 
   describe('POST /', () => {
     it('debería crear una queja válida', async () => {
-      createQueja.mockResolvedValue({
+      createComplaint.mockResolvedValue({
         id: 1,
         description: 'Texto de prueba',
         entity_id: 1,

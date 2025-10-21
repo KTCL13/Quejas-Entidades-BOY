@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { getEntitiesCache } = require('../config/cache');
 const {
-  createQueja,
+  createComplaint,
   getQuejasPaginadasForEntity,
   getComplaintReportByEntity,
   deleteComplaint,
@@ -43,7 +43,7 @@ router.post('/', async (req, res) => {
         .status(400)
         .json({ error: 'Debe seleccionar una entidad válida.' });
     }
-    const queja = await createQueja({ texto, entity_id });
+    const queja = await createComplaint({ description: texto, entity_id });
     res.status(201).json({ message: 'Queja registrada', data: queja });
   } catch {
     res.status(500).json({ error: 'Error al registrar la queja.' });
