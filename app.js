@@ -9,6 +9,7 @@ var complaintsListRouter = require('./routes/complaintsList');
 var complaintsRouter = require('./routes/quejas');
 var reportesRouter = require('./routes/reportes');
 var commentsRouter = require('./routes/comments');
+const loginRouter = require('./routes/authRoutes');
 const { loadEntidades } = require('./services/quejas.service');
 
 var app = express();
@@ -29,6 +30,7 @@ app.use('/api/complaints', complaintsRouter);
 app.use('/api/reports', reportesRouter);
 app.use('/', complaintsListRouter);
 app.use('/api/comments', commentsRouter);
+app.use('/api', loginRouter);
 
 loadEntidades();
 app.get('/login', (req, res) => {
