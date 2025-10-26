@@ -7,13 +7,26 @@ block content
         .card.shadow-sm
           .card-body
             h3.text-center.fw-bold.mb-4 Iniciar Sesión
-            form(action="api/login" method="POST")
+            if error
+              .alert.alert-danger.text-center= error
+            form(action="/api/login" method="POST")
               .mb-3
                 label.form-label(for="email") Email
-                input#email.form-control(type="text", name="email", placeholder="Ingresa tu email", required)
+                input#email.form-control(
+                  type="email",
+                  name="email",
+                  placeholder="Ingresa tu email",
+                  required,
+                  value=email || ''
+                )
               .mb-3
                 label.form-label(for="password") Contraseña
-                input#password.form-control(type="password", name="password", placeholder="Ingresa tu contraseña", required)
+                input#password.form-control(
+                  type="password",
+                  name="password",
+                  placeholder="Ingresa tu contraseña",
+                  required
+                )
               .d-grid
                 button.btn.btn-primary.btn-block(type="submit") Ingresar
             .mt-3.text-center
