@@ -28,7 +28,7 @@ block content
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const id_entidad_val = entidadSelect.value;
-      const texto = document.getElementById('texto').value;
+      const description = document.getElementById('texto').value;
 
       if (!id_entidad_val) {
         mensajeDiv.style.color = 'red';
@@ -42,7 +42,7 @@ block content
         const res = await fetch('/api/complaints', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id, texto })
+          body: JSON.stringify({ entity_id, description })
         });
         const data = await res.json();
 
