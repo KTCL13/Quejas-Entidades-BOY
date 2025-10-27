@@ -27,4 +27,15 @@ router.post('/login', async (req, res) => {
   }
 });
 
+router.post('/logout', async (req, res) => {
+  try {
+    await axios.post('http://localhost:4000/api/auth/logout', {
+      email: req.body.email,
+    });
+    res.status(200).json({ message: 'Logout exitoso' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al cerrar sesión' });
+  }
+});
+
 module.exports = router;
