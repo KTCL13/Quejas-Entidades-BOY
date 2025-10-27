@@ -3,7 +3,7 @@ const { setEntitiesCache } = require('../config/cache');
 const COMPLAINT_STATES = require('../config/constants');
 const complaintRepository = require('../repositories/complaintRepository');
 
-exports.getQuejasPaginadasForEntity = async (entidadId, page, limit) => {
+exports.getComplaintListByEntity = async (entidadId, page, limit) => {
   try {
     const paginatedResult =
       await complaintRepository.getPaginatedComplaintsForEntity(

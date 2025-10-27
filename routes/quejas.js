@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { getEntitiesCache } = require('../config/cache');
 const {
-  getQuejasPaginadasForEntity,
+  getComplaintListByEntity,
   getComplaintReportByEntity,
   deleteComplaint,
   changeComplaintState,
@@ -67,7 +67,7 @@ async function obtenerQuejas(req, res) {
 
     sendNotificationEmail(entidadId, req);
 
-    const result = await getQuejasPaginadasForEntity(entidadId, page, limit);
+    const result = await getComplaintListByEntity(entidadId, page, limit);
     res.json(result);
   } catch {
     res.status(500).json({ error: 'Error al obtener las quejas.' });
