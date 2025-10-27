@@ -79,9 +79,26 @@ async function getPaginatedComplaintsForEntity(entidadId, page, limit) {
   }
 }
 
+async function deleteComplaint(complaintId) {
+  try {
+    const complaint = await Complaint.findByPk(complaintId);
+    if (!complaint) {
+      return null;
+    }
+    complaint.is_deleted = true;
+    await complaint.save();
+
+    return true;
+  } catch (error) {
+    console.error('Error al actualizar el estado de la queja:', error);
+    throw new Error('Error al actualizar el estado de la queja');
+  }
+}
+
 module.exports = {
   getComplaintById,
   updateComplaintState,
   createComplaint,
   getPaginatedComplaintsForEntity,
+  deleteComplaint,
 };
