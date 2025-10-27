@@ -18,14 +18,32 @@ async function fetchQuejas(entidadId, page = 1, limit = rowsPerPage) {
         })
         .then(async function (token) {
           try {
+            const userEmail = localStorage.getItem('userEmail');
+
+            if (!userEmail) {
+              showSessionExpiredModal();
+              return reject(new Error('Sesión inactiva'));
+            }
+
             const res = await fetch(
               `/api/complaints?entidadId=${entidadId}&page=${page}&limit=${limit}`,
               {
                 headers: {
                   'X-Recaptcha-Token': token,
+                  'X-UserEmail': userEmail,
                 },
               }
             );
+
+            if (res.status === 401) {
+              showSessionExpiredModal();
+              return reject(new Error('Sesión inactiva'));
+            }
+
+            if (!res.ok) {
+              throw new Error(`Error HTTP ${res.status}`);
+            }
+
             const data = await res.json();
             resolve(data);
           } catch (err) {
@@ -145,6 +163,18 @@ document.getElementById('entidad').addEventListener('change', function () {
   currentPage = 1;
   renderTable(entidadId, currentPage);
 });
+
+function showSessionExpiredModal() {
+  const modal = new bootstrap.Modal(
+    document.getElementById('sessionExpiredModal')
+  );
+  modal.show();
+}
+
+function logoutAndRedirect() {
+  localStorage.removeItem('userEmail');
+  window.location.href = '/login';
+}
 
 confirmDeleteBtn.addEventListener('click', async () => {
   const password = deletePasswordInput.value;
