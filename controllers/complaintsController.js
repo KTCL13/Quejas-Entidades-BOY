@@ -2,6 +2,7 @@ const {
   getComplaintById,
   createComplaint,
   getComplaintListByEntity,
+  deleteComplaint,
 } = require('../services/quejas.service');
 
 exports.getComplaintByIdController = async (req, res, next) => {
@@ -32,6 +33,16 @@ exports.getComplaintListController = async (req, res, next) => {
 
     const complaints = await getComplaintListByEntity(entityId, page, limit);
     return res.status(200).json(complaints);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteComplaintController = async (req, res, next) => {
+  try {
+    const complaintId = req.params.complaintId;
+    await deleteComplaint(complaintId);
+    return res.status(200).json({ message: 'Queja eliminada correctamente.' });
   } catch (error) {
     next(error);
   }
