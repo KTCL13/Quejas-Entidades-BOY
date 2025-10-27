@@ -1,12 +1,15 @@
 const express = require('express');
 const axios = require('axios');
-
+const dotenv = require('dotenv');
 const router = express.Router();
+
+const authServiceUrl = process.env.AUTH_SERVICE_URL;
+
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    await axios.post('http://localhost:4000/api/auth/login', {
+    await axios.post(`${authServiceUrl}/login`, {
       email,
       password,
     });
@@ -29,7 +32,7 @@ router.post('/login', async (req, res) => {
 
 router.post('/logout', async (req, res) => {
   try {
-    await axios.post('http://localhost:4000/api/auth/logout', {
+    await axios.post(`${authServiceUrl}/logout`, {
       email: req.body.email,
     });
     res.status(200).json({ message: 'Logout exitoso' });
