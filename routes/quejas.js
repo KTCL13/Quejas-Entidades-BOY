@@ -9,13 +9,17 @@ const {
   changeComplaintState,
   getComplaintStates,
 } = require('../services/quejas.service');
-const { verifyRecaptcha } = require('../middleware/recaptcha');
+const {
+  verifyRecaptcha,
+  verifyRecaptchaV3,
+} = require('../middleware/recaptcha');
 const mailService = require('../services/sendgrid.service');
-const { param, body } = require('express-validator');
+const { param, body, header, query } = require('express-validator');
 const { validateRequest } = require('../middleware/validateRequest');
 const {
   getComplaintByIdController,
   createComplaintController,
+  getComplaintListController,
 } = require('../controllers/complaintsController');
 
 // GET /registrar → renderiza el formulario con entidades
@@ -89,7 +93,16 @@ async function sendNotificationEmail(entityId, req) {
 }
 
 // GET /api/complaints → lista paginada por entidad
-router.get('/', obtenerQuejas);
+router.get(
+  '/',
+  query('entidadId').isInt().withMessage('entidadId debe ser un entero'),
+  header('x-recaptcha-token')
+    .notEmpty()
+    .withMessage('Token de reCAPTCHA es requerido'),
+  validateRequest,
+  verifyRecaptchaV3,
+  getComplaintListController
+);
 
 //DELETE/api/complaints/:id
 router.delete('/:id', async (req, res) => {
