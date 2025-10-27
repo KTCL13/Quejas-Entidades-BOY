@@ -15,7 +15,10 @@ const {
 } = require('../middleware/recaptcha');
 const mailService = require('../services/sendgrid.service');
 const { param, body, header, query } = require('express-validator');
-const { validateRequest } = require('../middleware/validateRequest');
+const {
+  validateRequest,
+  validateLogin,
+} = require('../middleware/validateRequest');
 const {
   getComplaintByIdController,
   createComplaintController,
@@ -99,8 +102,10 @@ router.get(
   header('x-recaptcha-token')
     .notEmpty()
     .withMessage('Token de reCAPTCHA es requerido'),
+  header('x-useremail').isEmail().withMessage('user email is required'),
   validateRequest,
   verifyRecaptchaV3,
+  validateLogin,
   getComplaintListController
 );
 
