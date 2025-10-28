@@ -9,12 +9,13 @@ const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
 const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
 const deletePasswordInput = document.getElementById('deletePassword');
 
-
 async function fetchQuejas(entidadId, page = 1, limit = rowsPerPage) {
   return new Promise((resolve, reject) => {
     grecaptcha.ready(() => {
       grecaptcha
-        .execute('6LeBKKkrAAAAAObCxLb511gIotGRecWMZZOEZhRg', { action: 'submit' })
+        .execute('6LeBKKkrAAAAAObCxLb511gIotGRecWMZZOEZhRg', {
+          action: 'submit',
+        })
         .then(async (token) => {
           try {
             const userEmail = localStorage.getItem('userEmail');
@@ -66,8 +67,8 @@ async function renderTable(entidadId, page = 1) {
             q.state === 'pendiente'
               ? 'bg-warning text-dark'
               : q.state === 'en proceso'
-              ? 'bg-info text-dark'
-              : 'bg-success'
+                ? 'bg-info text-dark'
+                : 'bg-success'
           }">${q.state}</span>
         </td>
         <td>
@@ -98,7 +99,6 @@ async function renderTable(entidadId, page = 1) {
     document.querySelectorAll('.btn-change-state').forEach((btn) => {
       btn.addEventListener('click', () => openChangeStateModal(btn));
     });
-
   } else {
     const tr = document.createElement('tr');
     tr.innerHTML = `<td class="text-center" colspan="5">No hay quejas registradas</td>`;
@@ -107,7 +107,6 @@ async function renderTable(entidadId, page = 1) {
 
   renderPagination(result.pagination.totalPages, result.pagination.currentPage);
 }
-
 
 function renderPagination(totalPages, page) {
   pagination.innerHTML = '';
@@ -150,8 +149,9 @@ function renderPagination(totalPages, page) {
   pagination.appendChild(next);
 }
 
-
-const modalEstado = new bootstrap.Modal(document.getElementById('modalCambiarEstado'));
+const modalEstado = new bootstrap.Modal(
+  document.getElementById('modalCambiarEstado')
+);
 const selectEstado = document.getElementById('nuevoEstado');
 const btnGuardarEstado = document.getElementById('btnGuardarEstado');
 let complaintToChange = null;
@@ -171,28 +171,32 @@ btnGuardarEstado.addEventListener('click', async () => {
   if (!userEmail) return showSessionExpiredModal();
 
   try {
-    const res = await fetch(`/api/complaints/change-state/${complaintToChange}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-useremail': userEmail,
-      },
-      body: JSON.stringify({ newState: nuevoEstado }),
-    });
+    const res = await fetch(
+      `/api/complaints/change-state/${complaintToChange}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-useremail': userEmail,
+        },
+        body: JSON.stringify({ newState: nuevoEstado }),
+      }
+    );
 
     if (!res.ok) throw new Error('Error al actualizar estado');
     modalEstado.hide();
 
-  
-    const fila = document.querySelector(`button[data-id="${complaintToChange}"]`).closest('tr');
+    const fila = document
+      .querySelector(`button[data-id="${complaintToChange}"]`)
+      .closest('tr');
     const celdaEstado = fila.querySelector('.estado-queja span');
     celdaEstado.textContent = nuevoEstado;
     celdaEstado.className = `badge ${
       nuevoEstado === 'pendiente'
         ? 'bg-warning text-dark'
         : nuevoEstado === 'en proceso'
-        ? 'bg-info text-dark'
-        : 'bg-success'
+          ? 'bg-info text-dark'
+          : 'bg-success'
     }`;
 
     showAlert('Estado actualizado correctamente ✅', 'success');
@@ -201,7 +205,6 @@ btnGuardarEstado.addEventListener('click', async () => {
     showAlert('Error al actualizar el estado ❌', 'danger');
   }
 });
-
 
 confirmDeleteBtn.addEventListener('click', async () => {
   try {
@@ -230,7 +233,6 @@ confirmDeleteBtn.addEventListener('click', async () => {
   }
 });
 
-
 function showAlert(message, type = 'success') {
   const alertDiv = document.createElement('div');
   alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3 shadow`;
@@ -244,7 +246,9 @@ function showAlert(message, type = 'success') {
 }
 
 function showSessionExpiredModal() {
-  const modal = new bootstrap.Modal(document.getElementById('sessionExpiredModal'));
+  const modal = new bootstrap.Modal(
+    document.getElementById('sessionExpiredModal')
+  );
   modal.show();
 }
 
@@ -252,7 +256,6 @@ function logoutAndRedirect() {
   localStorage.removeItem('userEmail');
   window.location.href = '/login';
 }
-
 
 document.getElementById('entidad').addEventListener('change', function () {
   const entidadId = this.value;
@@ -262,12 +265,13 @@ document.getElementById('entidad').addEventListener('change', function () {
   renderTable(entidadId, currentPage);
 });
 
-
 (() => {
   function closeAllDropdowns() {
     document.querySelectorAll('.dropdown-menu.show').forEach((menu) => {
       menu.classList.remove('show');
-      const btn = menu.closest('.dropdown')?.querySelector('[data-bs-toggle="dropdown"]');
+      const btn = menu
+        .closest('.dropdown')
+        ?.querySelector('[data-bs-toggle="dropdown"]');
       if (btn) btn.setAttribute('aria-expanded', 'false');
     });
   }
