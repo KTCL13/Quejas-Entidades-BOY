@@ -3,17 +3,10 @@ const router = express.Router();
 
 const { getEntitiesCache } = require('../config/cache');
 const {
-  getComplaintListByEntity,
   getComplaintReportByEntity,
-  deleteComplaint,
-  changeComplaintState,
   getComplaintStates,
 } = require('../services/quejas.service');
-const {
-  verifyRecaptcha,
-  verifyRecaptchaV3,
-} = require('../middleware/recaptcha');
-const mailService = require('../services/sendgrid.service');
+const { verifyRecaptchaV3 } = require('../middleware/recaptcha');
 const { param, body, header, query } = require('express-validator');
 const {
   validateRequest,
@@ -48,55 +41,6 @@ router.post(
   createComplaintController
 );
 
-// Controlador para obtener quejas paginadas
-async function obtenerQuejas(req, res) {
-  try {
-    const entidadId = parseInt(req.query.entidadId, 10);
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-
-    if (!entidadId || isNaN(entidadId)) {
-      return res
-        .status(400)
-        .json({ error: 'Debe seleccionar una entidad válida.' });
-    }
-
-    if (process.env.NODE_ENV !== 'test') {
-      const token = req.headers['x-recaptcha-token'];
-      if (!token) {
-        return res.status(400).json({ error: 'Token de reCAPTCHA faltante.' });
-      }
-      const recaptchaOk = await verifyRecaptcha(token);
-      if (!recaptchaOk) {
-        return res
-          .status(403)
-          .json({ error: 'Fallo la verificación de reCAPTCHA.' });
-      }
-    }
-
-    sendNotificationEmail(entidadId, req);
-
-    const result = await getComplaintListByEntity(entidadId, page, limit);
-    res.json(result);
-  } catch {
-    res.status(500).json({ error: 'Error al obtener las quejas.' });
-  }
-}
-
-async function sendNotificationEmail(entityId, req) {
-  try {
-    const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-    await mailService.sendMail({
-      from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_TO,
-      subject: 'Consulta de lista de quejas',
-      text: `Un usuario consultó la lista de quejas (entidadId=${entityId}) desde la IP: ${clientIp}`,
-    });
-  } catch (error) {
-    console.error('Error al enviar el correo de notificación:', error);
-  }
-}
-
 // GET /api/complaints → lista paginada por entidad
 router.get(
   '/',
@@ -120,24 +64,6 @@ router.delete(
   validateLogin,
   deleteComplaintController
 );
-
-async function handleDeleteComplaint(complaintId) {
-  try {
-    const result = await deleteComplaint(complaintId);
-    return result > 0;
-  } catch (error) {
-    console.error('Error al eliminar la queja:', error);
-    throw new Error('Error al eliminar la queja');
-  }
-}
-
-async function checkAdminPass(req) {
-  const adminPass = req.headers['x-admin-pass'];
-  if (adminPass !== process.env.ADMIN_PASS) {
-    return false;
-  }
-  return true;
-}
 
 // GET /api/complaints/quejas-por-entidad → reporte
 router.get('/quejas-por-entidad', async (req, res) => {
