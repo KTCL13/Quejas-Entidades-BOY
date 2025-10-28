@@ -12,13 +12,13 @@ exports.getCommentsByComplaintId = async (complaintId) => {
     return comments;
   } catch (error) {
     console.error('Error en CommentService.getCommentsByComplaintId:', error);
-    throw new Error('Error al obtener los comentarios');
+    throw error;
   }
 };
 
-exports.createCommentByComplaintId = async (complaintId, content) => {
+exports.createCommentByComplaintId = async (complaintId, message) => {
   try {
-    if (!content || content.trim().length === 0) {
+    if (!message || message.trim().length === 0) {
       throw new Error('El comentario no puede estar vacío');
     }
 
@@ -29,7 +29,7 @@ exports.createCommentByComplaintId = async (complaintId, content) => {
 
     const newComment = await commentRepository.create({
       complaint_id: complaintId,
-      content: content.trim(),
+      message: message.trim(),
     });
 
     return newComment;
