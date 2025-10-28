@@ -13,7 +13,7 @@ exports.getComplaintListByEntity = async (entidadId, page, limit) => {
       );
     return paginatedResult;
   } catch (error) {
-    console.error('Error en getQuejasPaginadasForEntity:', error);
+    console.error('Error en getPaginatedComplaintsForEntity:', error);
     throw new Error('Error al obtener las quejas');
   }
 };
