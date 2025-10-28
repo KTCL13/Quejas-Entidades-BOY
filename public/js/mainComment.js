@@ -30,3 +30,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   loadComments();
 });
+
+function logoutAndRedirect() {
+  localStorage.removeItem('userEmail');
+  window.location.href = '/login';
+}
