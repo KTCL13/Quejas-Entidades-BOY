@@ -97,7 +97,6 @@ async function renderTable(entidadId, page = 1) {
     document.querySelectorAll('.btn-delete').forEach((btn) => {
       btn.addEventListener('click', () => {
         complaintToDelete = btn.getAttribute('data-id');
-        deletePasswordInput.value = ''; // limpiar input
         deleteModal.show();
       });
     });
@@ -177,20 +176,26 @@ function logoutAndRedirect() {
 }
 
 confirmDeleteBtn.addEventListener('click', async () => {
-  const password = deletePasswordInput.value;
-  if (!password) {
-    alert('Por favor ingrese la contraseña.');
-    return;
-  }
-
   try {
+    const userEmail = localStorage.getItem('userEmail');
+
+    if (!userEmail) {
+      showSessionExpiredModal();
+      return new Error('Sesión inactiva');
+    }
+
     const res = await fetch(`/api/complaints/${complaintToDelete}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'x-admin-pass': password,
+        'x-UserEmail': userEmail,
       },
     });
+
+    if (res.status === 401) {
+      showSessionExpiredModal();
+      return new Error('Sesión inactiva');
+    }
 
     if (res.ok) {
       deleteModal.hide();

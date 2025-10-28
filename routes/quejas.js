@@ -23,6 +23,7 @@ const {
   getComplaintByIdController,
   createComplaintController,
   getComplaintListController,
+  deleteComplaintController,
 } = require('../controllers/complaintsController');
 
 // GET /registrar → renderiza el formulario con entidades
@@ -110,28 +111,14 @@ router.get(
 );
 
 //DELETE/api/complaints/:id
-router.delete('/:id', async (req, res) => {
-  try {
-    const complaintId = parseInt(req.params.id, 10);
-    if (isNaN(complaintId)) {
-      return res.status(400).json({ error: 'ID de queja inválido.' });
-    }
-
-    if (!(await checkAdminPass(req))) {
-      return res
-        .status(401)
-        .json({ error: 'Acceso denegado. Credenciales inválidas.' });
-    }
-
-    if (await handleDeleteComplaint(complaintId)) {
-      res.json({ message: 'Queja eliminada correctamente.' });
-    } else {
-      res.status(404).json({ error: 'Queja no encontrada.' });
-    }
-  } catch {
-    res.status(500).json({ error: 'Error al eliminar la queja.' });
-  }
-});
+router.delete(
+  '/:complaintId',
+  param('complaintId').isInt().withMessage('complaintID debe ser un entero'),
+  header('x-useremail').isEmail().withMessage('user email is required'),
+  validateRequest,
+  validateLogin,
+  deleteComplaintController
+);
 
 async function handleDeleteComplaint(complaintId) {
   try {
