@@ -1,14 +1,16 @@
 const commentRepository = require('../repositories/commentRepository');
-const { Complaint } = require('../models');
+const complaintRepository = require('../repositories/complaintRepository');
 
 exports.getCommentsByComplaintId = async (complaintId) => {
   try {
-    const complaint = await Complaint.findByPk(complaintId);
+
+    const complaint = await complaintRepository.getComplaintById(complaintId);
     if (!complaint) {
       throw new Error('La queja especificada no existe');
     }
 
-    const comments = await complaint.getComments(); // Usa la relación definida en el modelo
+
+    const comments = await commentRepository.findByComplaintId(complaintId);
     return comments;
   } catch (error) {
     console.error('Error al obtener comentarios:', error);
@@ -22,15 +24,16 @@ exports.createCommentByComplaintId = async (complaintId, content) => {
       throw new Error('El comentario no puede estar vacío');
     }
 
-    const complaint = await Complaint.findByPk(complaintId);
+
+    const complaint = await complaintRepository.getComplaintById(complaintId);
     if (!complaint) {
       throw new Error('La queja especificada no existe');
     }
 
-    const newComment = await commentRepository.createCommentByComplaintId(
-      complaintId,
-      content.trim()
-    );
+    const newComment = await commentRepository.create({
+      complaint_id: complaintId,
+      content: content.trim(),
+    });
 
     return newComment;
   } catch (error) {
