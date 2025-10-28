@@ -3,6 +3,7 @@ const {
   createComplaint,
   getComplaintListByEntity,
   deleteComplaint,
+  changeComplaintState,
 } = require('../services/quejas.service');
 
 exports.getComplaintByIdController = async (req, res, next) => {
@@ -43,6 +44,19 @@ exports.deleteComplaintController = async (req, res, next) => {
     const complaintId = req.params.complaintId;
     await deleteComplaint(complaintId);
     return res.status(200).json({ message: 'Queja eliminada correctamente.' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.changeComplaintStateController = async (req, res, next) => {
+  try {
+    const { newState } = req.body;
+    const complaintId = req.params.complaintId;
+    await changeComplaintState(complaintId, newState);
+    return res.json({
+      message: 'Estado de la queja actualizado correctamente.',
+    });
   } catch (error) {
     next(error);
   }
