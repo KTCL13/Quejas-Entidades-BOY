@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
+const { getComplaintReportByEntity } = require('../services/quejas.service');
 require('dotenv').config(); // <--- Importar dotenv
 
 // Configuración del transporter con variables de entorno
@@ -14,7 +15,21 @@ const transporter = nodemailer.createTransport({
 
 // GET /api/reports
 router.get('/', async (req, res) => {
-  res.render('reportes', { activePage: 'reportes', mensaje: null });
+  try {
+    const report = await getComplaintReportByEntity();
+    res.render('reportes', {
+      activePage: 'reportes',
+      message: null,
+      report,
+    });
+  } catch (error) {
+    console.error('Error al cargar reporte de quejas:', error);
+    res.render('reportes', {
+      activePage: 'reportes',
+      message: 'Error al cargar el reporte',
+      report: [],
+    });
+  }
 });
 
 // GET /api/reports/ver

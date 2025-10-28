@@ -80,11 +80,14 @@ exports.getComplaintReportByEntity = async () => {
         {
           model: Complaint,
           attributes: [],
+          where: { is_deleted: false },
+          required: false,
         },
       ],
       group: ['Entity.id'],
       order: [[Complaint.sequelize.literal('total_complaints'), 'DESC']],
     });
+
     return result;
   } catch (error) {
     console.error('Error generando reporte de quejas por entidad:', error);
