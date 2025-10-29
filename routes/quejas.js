@@ -65,22 +65,6 @@ router.delete(
   deleteComplaintController
 );
 
-// GET /api/complaints/quejas-por-entidad → reporte
-router.get('/quejas-por-entidad', async (req, res) => {
-  try {
-    const rows = await getComplaintReportByEntity();
-    res.json(rows);
-  } catch (err) {
-    console.error(
-      'Error en /api/reports/quejas-por-entidad:',
-      err.message || err
-    );
-    res
-      .status(500)
-      .json({ error: 'Error al generar el reporte', details: err.message });
-  }
-});
-
 // PUT /api/complaints/cambiar-estado
 router.put(
   '/change-state/:complaintId',
