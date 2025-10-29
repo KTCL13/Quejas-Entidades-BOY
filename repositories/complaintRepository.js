@@ -22,9 +22,7 @@ async function getComplaintById(complaintId) {
 async function updateComplaintState(complaintId, newState) {
   try {
     const complaint = await Complaint.findByPk(complaintId);
-    if (!complaint) {
-      return null;
-    }
+    if (!complaint) return null;
 
     complaint.state = newState;
     await complaint.save();
@@ -38,10 +36,7 @@ async function updateComplaintState(complaintId, newState) {
 
 async function createComplaint({ description, entity_id }) {
   try {
-    const nuevaQueja = await Complaint.create({
-      description,
-      entity_id,
-    });
+    const nuevaQueja = await Complaint.create({ description, entity_id });
     return nuevaQueja;
   } catch (error) {
     console.error('Error en createComplaint (repository):', error);
@@ -82,16 +77,15 @@ async function getPaginatedComplaintsForEntity(entidadId, page, limit) {
 async function deleteComplaint(complaintId) {
   try {
     const complaint = await Complaint.findByPk(complaintId);
-    if (!complaint) {
-      return null;
-    }
+    if (!complaint) return null;
+
     complaint.is_deleted = true;
     await complaint.save();
 
     return true;
   } catch (error) {
-    console.error('Error al actualizar el estado de la queja:', error);
-    throw new Error('Error al actualizar el estado de la queja');
+    console.error('Error al eliminar la queja:', error);
+    throw new Error('Error al eliminar la queja');
   }
 }
 
