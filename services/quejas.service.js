@@ -38,13 +38,6 @@ exports.getEntidades = async () => {
 };
 
 exports.createComplaint = async ({ description, entity_id }) => {
-  if (
-    !description ||
-    description.trim().length < 10 ||
-    description.trim().length > 2000
-  ) {
-    throw new Error('La queja debe tener entre 10 y 2000 caracteres');
-  }
   const entidad = await Entity.findByPk(entity_id);
   if (!entidad) {
     throw new Error('La entidad especificada no existe');
