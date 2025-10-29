@@ -17,7 +17,7 @@ block content
 
     button(type='submit', id='btnEnviar', style='padding:8px 16px;', color: green, background: white, border:2px) Enviar queja
 
-  div#mensaje(style='margin-top:15px;color:red;text-align:center;')
+  div#mensaje(style='margin-top:20px;padding:10px;border-radius:4px;display:none;text-align:center;')
 
   script.
     const form = document.getElementById('formQueja');
@@ -25,36 +25,52 @@ block content
     const mensajeDiv = document.getElementById('mensaje');
     const btnEnviar = document.getElementById('btnEnviar');
 
+    function mostrarMensaje(tipo, texto) {
+      mensajeDiv.style.display = 'block';
+      mensajeDiv.style.color = tipo === 'error' ? '#dc3545' : '#28a745';
+      mensajeDiv.style.backgroundColor = tipo === 'error' ? '#f8d7da' : '#d4edda';
+      mensajeDiv.style.border = tipo === 'error' ? '1px solid #f5c6cb' : '1px solid #c3e6cb';
+      mensajeDiv.textContent = texto;
+
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        mensajeDiv.style.display = 'none';
+      }, 5000);
+    }
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const id_entidad_val = entidadSelect.value;
       const description = document.getElementById('texto').value;
 
       if (!id_entidad_val) {
-        mensajeDiv.style.color = 'red';
-        mensajeDiv.textContent = 'Debe seleccionar una entidad.';
+        mostrarMensaje('error', 'Debe seleccionar una entidad.');
         return;
       }
 
-      const entity_id = Number(id_entidad_val);
-
+      btnEnviar.disabled = true;
+      
       try {
         const res = await fetch('/api/complaints', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ entity_id, description })
+          body: JSON.stringify({ 
+            entity_id: Number(id_entidad_val), 
+            description 
+          })
         });
+
         const data = await res.json();
 
         if (!res.ok) {
-          mensajeDiv.style.color = 'red';
-          mensajeDiv.textContent = data.error;
+          mostrarMensaje('error', data.error || 'Error al registrar la queja');
         } else {
-          mensajeDiv.style.color = 'green';
-          mensajeDiv.textContent = data.message;
+          mostrarMensaje('success', 'Queja registrada exitosamente');
           form.reset();
         }
       } catch (err) {
-        mensajeDiv.textContent = 'Error de servidor: ' + err.message;
+        mostrarMensaje('error', 'Error de servidor: ' + err.message);
+      } finally {
+        btnEnviar.disabled = false;
       }
     });
