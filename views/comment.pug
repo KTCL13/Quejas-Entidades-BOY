@@ -53,9 +53,11 @@ block content
       .modal-content
         .modal-header.bg-danger.text-white
           h5.modal-title#sessionExpiredModalLabel Sesión expirada
+          button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
         .modal-body
           | Tu sesión ha expirado. Por favor, inicia sesión nuevamente para continuar.
         .modal-footer
+          button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Cancelar
           button.btn.btn-primary(type="button" onclick="logoutAndRedirect()") Iniciar sesión
 
   script(src="/js/mainComment.js")
@@ -69,12 +71,17 @@ block content
       const complaintIdInput = document.getElementById("complaintId");
       const currentStateEl = document.getElementById("currentState");
       const selectState = document.getElementById("selectState");
+      const btnShowComment = document.getElementById("showAddComment");
+      const formAddComment = document.getElementById("addCommentForm");
+      const cancelCommentBtn = document.getElementById("cancelComment");
+      const commentsContainer = document.getElementById("commentsContainer");
+      const complaintId = "#{complaint.id}";
 
       if (!btnOpen || !modalEl || !submitBtn) return;
 
       const bsModal = new bootstrap.Modal(modalEl, { keyboard: true });
 
-      // Abrir modal y cargar opciones
+      // Cambiar estado
       btnOpen.addEventListener("click", async () => {
         selectState.innerHTML = "<option value=''>Cargando estados...</option>";
 
@@ -102,74 +109,7 @@ block content
         bsModal.show();
       });
 
-      function showTempAlert(message, type = "info") {
-        const existing = document.getElementById("tempAlertChangeState");
-        if (existing) existing.remove();
-        const alert = document.createElement("div");
-        alert.id = "tempAlertChangeState";
-        alert.className = `alert alert-${type} position-fixed bottom-0 end-0 m-3`;
-        alert.style.zIndex = 9999;
-        alert.textContent = message;
-        document.body.appendChild(alert);
-        setTimeout(() => alert.remove(), 2500);
-      }
-
-      // Enviar cambio de estado
-      submitBtn.addEventListener("click", async () => {
-        const newState = selectState.value;
-        if (!newState) {
-          showTempAlert("Seleccione un estado.", "warning");
-          return;
-        }
-
-        const complaintId = complaintIdInput && complaintIdInput.value;
-        try {
-          const userEmail = localStorage.getItem('userEmail');
-
-          if (!userEmail) {
-            showSessionExpiredModal();
-            return new Error('Sesión inactiva');
-          }
-
-          const res = await fetch(`/api/complaints/change-state/${complaintId}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              "x-userEmail" : userEmail
-            },
-            body: JSON.stringify({ newState })
-          });
-
-          if (res.status === 401) {
-            showSessionExpiredModal();
-            return;
-          }
-
-          if (res.ok) {
-            bsModal.hide();
-            if (currentStateEl) currentStateEl.textContent = newState;
-            showTempAlert("Estado cambiado correctamente.", "success");
-          } else {
-            showTempAlert("Error al cambiar estado.", "danger");
-          }
-        } catch (err) {
-          console.error("Error en petición:", err);
-          showTempAlert("Error de red al cambiar estado.", "danger");
-        }
-      });
-
-      function showSessionExpiredModal() {
-        const modal = new bootstrap.Modal(document.getElementById('sessionExpiredModal'));
-        modal.show();
-      }
-
-      // Lógica de comentarios
-      const btnShowComment = document.getElementById("showAddComment");
-      const formAddComment = document.getElementById("addCommentForm");
-      const cancelCommentBtn = document.getElementById("cancelComment");
-      const commentsContainer = document.getElementById("commentsContainer");
-      const complaintId = "#{complaint.id}";
-
+      // Manejar comentarios
       if (btnShowComment && formAddComment) {
         btnShowComment.addEventListener("click", () => {
           formAddComment.classList.remove("d-none");
@@ -217,4 +157,65 @@ block content
           }
         });
       }
+
+      // Cambiar estado (submit)
+      submitBtn.addEventListener("click", async () => {
+        const newState = selectState.value;
+        if (!newState) {
+          showTempAlert("Seleccione un estado.", "warning");
+          return;
+        }
+
+        const complaintId = complaintIdInput && complaintIdInput.value;
+        try {
+          const userEmail = localStorage.getItem('userEmail');
+
+          if (!userEmail) {
+            showSessionExpiredModal();
+            return;
+          }
+
+          const res = await fetch(`/api/complaints/change-state/${complaintId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "x-userEmail": userEmail
+            },
+            body: JSON.stringify({ newState })
+          });
+
+          if (res.status === 401) {
+            showSessionExpiredModal();
+            return;
+          }
+
+          if (res.ok) {
+            bsModal.hide();
+            if (currentStateEl) currentStateEl.textContent = newState;
+            showTempAlert("Estado cambiado correctamente.", "success");
+          } else {
+            showTempAlert("Error al cambiar estado.", "danger");
+          }
+        } catch (err) {
+          console.error("Error en petición:", err);
+          showTempAlert("Error de red al cambiar estado.", "danger");
+        }
+      });
     });
+
+    function showTempAlert(message, type = "info") {
+      const existing = document.getElementById("tempAlertChangeState");
+      if (existing) existing.remove();
+      const alert = document.createElement("div");
+      alert.id = "tempAlertChangeState";
+      alert.className = `alert alert-${type} position-fixed bottom-0 end-0 m-3`;
+      alert.style.zIndex = 9999;
+      alert.textContent = message;
+      document.body.appendChild(alert);
+      setTimeout(() => alert.remove(), 2500);
+    }
+
+    function showSessionExpiredModal() {
+      const modal = new bootstrap.Modal(document.getElementById('sessionExpiredModal'));
+      modal.show();
+    }
