@@ -6,7 +6,6 @@ const {
   getComplaintReportByEntity,
   getComplaintStates,
 } = require('../services/quejas.service');
-const { verifyRecaptchaV3 } = require('../middleware/recaptcha');
 const { param, body, header, query } = require('express-validator');
 const {
   validateRequest,
@@ -50,7 +49,6 @@ router.get(
     .withMessage('Token de reCAPTCHA es requerido'),
   header('x-useremail').isEmail().withMessage('user email is required'),
   validateRequest,
-  verifyRecaptchaV3,
   validateLogin,
   getComplaintListController
 );
