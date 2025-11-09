@@ -45,9 +45,6 @@ router.post(
 router.get(
   '/',
   query('entidadId').isInt().withMessage('entidadId debe ser un entero'),
-  header('x-recaptcha-token')
-    .notEmpty()
-    .withMessage('Token de reCAPTCHA es requerido'),
   header('x-useremail').isEmail().withMessage('user email is required'),
   validateRequest,
   verifyRecaptchaV3,

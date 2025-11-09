@@ -10,48 +10,32 @@ const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
 const deletePasswordInput = document.getElementById('deletePassword');
 
 async function fetchQuejas(entidadId, page = 1, limit = rowsPerPage) {
-  return new Promise((resolve, reject) => {
-    grecaptcha.ready(function () {
-      grecaptcha
-        .execute('6LeBKKkrAAAAAObCxLb511gIotGRecWMZZOEZhRg', {
-          action: 'submit',
-        })
-        .then(async function (token) {
-          try {
-            const userEmail = localStorage.getItem('userEmail');
+  const userEmail = localStorage.getItem('userEmail');
 
-            if (!userEmail) {
-              showSessionExpiredModal();
-              return reject(new Error('Sesión inactiva'));
-            }
+  if (!userEmail) {
+    showSessionExpiredModal();
+    throw new Error('Sesión inactiva');
+  }
 
-            const res = await fetch(
-              `/api/complaints?entidadId=${entidadId}&page=${page}&limit=${limit}`,
-              {
-                headers: {
-                  'X-Recaptcha-Token': token,
-                  'X-UserEmail': userEmail,
-                },
-              }
-            );
+  const res = await fetch(
+    `/api/complaints?entidadId=${entidadId}&page=${page}&limit=${limit}`,
+    {
+      headers: {
+        'X-UserEmail': userEmail,
+      },
+    }
+  );
 
-            if (res.status === 401) {
-              showSessionExpiredModal();
-              return reject(new Error('Sesión inactiva'));
-            }
+  if (res.status === 401) {
+    showSessionExpiredModal();
+    throw new Error('Sesión inactiva');
+  }
 
-            if (!res.ok) {
-              throw new Error(`Error HTTP ${res.status}`);
-            }
+  if (!res.ok) {
+    throw new Error(`Error HTTP ${res.status}`);
+  }
 
-            const data = await res.json();
-            resolve(data);
-          } catch (err) {
-            reject(err);
-          }
-        });
-    });
-  });
+  return await res.json();
 }
 
 async function renderTable(entidadId, page = 1) {
