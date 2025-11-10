@@ -5,7 +5,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var complaintsListRouter = require('./routes/complaintsList');
+var index = require('./routes/index');
 var complaintsRouter = require('./routes/complaints');
 var reportesRouter = require('./routes/reportes');
 var commentsRouter = require('./routes/comments');
@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'views')));
 
 app.use('/api/complaints', complaintsRouter);
 app.use('/api/reports', reportesRouter);
-app.use('/', complaintsListRouter);
+app.use('/', index);
 app.use('/api/comments', commentsRouter);
 app.use('/api', loginRouter);
 

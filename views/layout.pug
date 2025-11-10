@@ -24,11 +24,11 @@ html
                 i.bi.bi-list-ul.me-1
                 | Lista de Quejas
             li.nav-item
-              a.nav-link(href='/api/complaints/registrar' class=(activePage === 'registrar' ? 'active fw-semibold text-dark' : ''))
+              a.nav-link(href='/registrar' class=(activePage === 'registrar' ? 'active fw-semibold text-dark' : ''))
                 i.bi.bi-pencil-square.me-1
                 | Registrar Queja
             li.nav-item#reportesItem
-              a.nav-link#linkReporte(href='/api/reports' class=(activePage === 'reportes' ? 'active fw-semibold text-dark' : ''))
+              a.nav-link#linkReporte(href='/complaints-by-entity' class=(activePage === 'reportes' ? 'active fw-semibold text-dark' : ''))
                 i.bi.bi-bar-chart.me-1
                 | Reportes
 
