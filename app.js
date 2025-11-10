@@ -32,6 +32,10 @@ app.use('/', complaintsListRouter);
 app.use('/api/comments', commentsRouter);
 app.use('/api', loginRouter);
 
+app.get('/unauthorized', (req, res) => {
+  res.render('unauthorized');
+});
+
 loadEntidades();
 app.get('/login', (req, res) => {
   res.render('login', { activePage: '' });

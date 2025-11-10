@@ -42,3 +42,31 @@ router.post('/logout', async (req, res) => {
 });
 
 module.exports = router;
+
+router.post('/validate-session', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const response = await axios.post(`${authServiceUrl}/session-status`, {
+      email,
+    });
+
+    const { sessionActive } = response.data;
+
+    if (!sessionActive) {
+      return res.status(401).json({
+        message: 'Usuario con sesion inactiva',
+      });
+    }
+
+    res.status(200).json({
+      message: 'Sesion activa',
+    });
+  } catch (error) {
+    console.error('Error al validar sesión:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Error al validar el estado de sesión.',
+    });
+  }
+});
