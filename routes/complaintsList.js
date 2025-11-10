@@ -5,7 +5,12 @@ var { getEntitiesCache } = require('../config/cache');
 var { getComplaintById } = require('../services/quejas.service');
 
 // Listado de quejas
+
 router.get('/', async (req, res) => {
+  res.render('welcomePage', {});
+});
+
+router.get('/complaints/', async (req, res) => {
   const entities = getEntitiesCache() || [];
   res.render('lista-quejas', {
     entities,
