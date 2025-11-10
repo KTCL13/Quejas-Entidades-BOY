@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  .container.py-5
+    .row.justify-content-center
+      .col-lg-6.text-center
+        .card.border-0.shadow-lg
+          .card-body.py-5
+            i.bi.bi-exclamation-circle.text-danger(style="font-size: 4rem;")
+            h1.mt-4.fw-bold No autorizado
+            p.lead.text-muted.mt-3
+              | Tu sesión ha expirado o no tienes permisos para acceder a esta página.
+            
+            .mt-4
+              p.mb-3
+                | Por favor, inicia sesión nuevamente para continuar.
+              a.btn.btn-primary.me-2(href='/login')
+                i.bi.bi-box-arrow-in-right.me-2
+                | Iniciar sesión
+              a.btn.btn-secondary(href='/')
+                i.bi.bi-house.me-2
+                | Volver al inicio
