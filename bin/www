@@ -8,6 +8,8 @@ var app = require('../app');
 var debug = require('debug')('quejas-entidades-boy:server');
 const sequelize = require('../config/database');
 var http = require('http');
+const { createTopics } = require('../kafka/config');
+const { connectProducer } = require('../kafka/Producer');
 
 /**
  * Get port from environment and store in Express.
@@ -32,6 +34,10 @@ async function startServer() {
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);
+    if (process.env.NODE_ENV !== 'test') {
+      await createTopics();
+      await connectProducer();
+    }
   } catch (error) {
     console.error('No se pudo conectar a la base de datos:', error);
     process.exit(1);
