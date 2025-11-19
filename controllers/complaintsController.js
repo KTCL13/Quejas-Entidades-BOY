@@ -5,8 +5,8 @@ const {
   deleteComplaint,
   changeComplaintState,
 } = require('../services/quejas.service');
+const { emitComplaintStateChanged, emitEmailNotification } = require('../kafka/Producer');
 
-const { emitComplaintStateChanged } = require('../kafka/Producer');
 
 exports.getComplaintByIdController = async (req, res, next) => {
   try {
@@ -55,9 +55,12 @@ exports.changeComplaintStateController = async (req, res, next) => {
   try {
     const { newState } = req.body;
     const complaintId = req.params.complaintId;
+
     const complaint = await getComplaintById(complaintId);
     const changedBy = req.header('x-useremail');
+    console.log("COMPLAINT DATA:", complaint); 
     await changeComplaintState(complaintId, newState);
+
     await emitComplaintStateChanged(
       complaint.id,
       complaint.description,
@@ -66,6 +69,12 @@ exports.changeComplaintStateController = async (req, res, next) => {
       newState,
       changedBy
     );
+    await emitEmailNotification({
+      to: complaint.User.email,   
+      subject: "Actualización en el estado de tu queja",
+      message: `<p>Tu queja con ID ${complaintId} cambió a estado: <b>${newState}</b></p>`
+    });
+
     return res.json({
       message: 'Estado de la queja actualizado correctamente.',
     });

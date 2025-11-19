@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getComplaintReportByEntity } = require('../services/quejas.service');
-const { emitReportVisited } = require('../middleware/kafkaProducer');
+const { emitReportVisited } = require('../kafka/Producer');
 require('dotenv').config();
 
 // GET /api/reports

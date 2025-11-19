@@ -55,6 +55,18 @@ const emitComplaintStateChanged = async (
   });
 };
 
+const emitEmailNotification = async (emailData) => {
+  await producer.send({
+    topic: EVENTS.EMAIL_NOTIFICATION,
+    messages: [
+      {
+        value: JSON.stringify(emailData),
+        timestamp: Date.now(),
+      },
+    ],
+  });
+};
+
 async function disconnectProducer() {
   await producer.disconnect();
 }
@@ -64,4 +76,5 @@ module.exports = {
   emitReportVisited,
   emitComplaintStateChanged,
   disconnectProducer,
+  emitEmailNotification,
 };
