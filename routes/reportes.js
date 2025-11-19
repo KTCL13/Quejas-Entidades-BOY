@@ -21,18 +21,10 @@ router.get('/', async (req, res) => {
       message: null,
       report,
     });
-    try {
-      await emitReportVisited(req);
-      logger.info('Evento report-visited emitido correctamente', {
-        ip: req.ip,
-        path: req.path,
-      });
-    } catch (err) {
-      logger.error('Error emitiendo evento report-visited', {
-        error: err.message,
-        stack: err.stack,
-      });
-    }
+        // Fire-and-forget: emitimos el evento sin bloquear la respuesta
+        emitReportVisited(req)
+          .then(() => logger.info('Evento report-visited emitido correctamente', { ip: req.ip, path: req.path }))
+          .catch((err) => logger.error('Error emitiendo evento report-visited', { error: err.message, stack: err.stack }));
   } catch (error) {
     logger.error('Error al cargar reporte de quejas:', {
       error: error.message,
@@ -53,24 +45,15 @@ router.get('/complaint-state-history', async (req, res) => {
     );
     const report = response.data;
 
-    try {
-      logger.info('Visita a reportes (historial) - emitiendo evento', {
-        ip: req.ip,
-        method: req.method,
-        path: req.path,
-        query: req.query,
-      });
-      await emitReportVisited(req);
-      logger.info('Evento report-visited emitido correctamente (historial)', {
-        ip: req.ip,
-        path: req.path,
-      });
-    } catch (err) {
-      logger.error('Error emitiendo evento report-visited (historial)', {
-        error: err.message,
-        stack: err.stack,
-      });
-    }
+        logger.info('Visita a reportes (historial) - emitiendo evento', {
+          ip: req.ip,
+          method: req.method,
+          path: req.path,
+          query: req.query,
+        });
+        emitReportVisited(req)
+          .then(() => logger.info('Evento report-visited emitido correctamente (historial)', { ip: req.ip, path: req.path }))
+          .catch((err) => logger.error('Error emitiendo evento report-visited (historial)', { error: err.message, stack: err.stack }));
     return res.status(200).json(report);
   } catch (error) {
     logger.error(
