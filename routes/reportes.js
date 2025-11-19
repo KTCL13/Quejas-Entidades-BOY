@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
       message: null,
       report,
     });
-    await emitReportVisited(req);
+    emitReportVisited(req);
   } catch (error) {
     console.error('Error al cargar reporte de quejas:', error);
     res.render('reportes', {
@@ -31,6 +31,8 @@ router.get('/complaint-state-history', async (req, res) => {
       `${process.env.COMPLAINTREPORT_SERVICE_URL}/reports?page=${req.query.page}&pageSize=${req.query.pageSize}`
     );
     const report = response.data;
+
+    emitReportVisited(req);
 
     return res.status(200).json(report);
   } catch (error) {
