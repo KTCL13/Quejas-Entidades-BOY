@@ -28,10 +28,16 @@ router.get('/', async (req, res) => {
         path: req.path,
       });
     } catch (err) {
-      logger.error('Error emitiendo evento report-visited', { error: err.message, stack: err.stack });
+      logger.error('Error emitiendo evento report-visited', {
+        error: err.message,
+        stack: err.stack,
+      });
     }
   } catch (error) {
-    logger.error('Error al cargar reporte de quejas:', { error: error.message, stack: error.stack });
+    logger.error('Error al cargar reporte de quejas:', {
+      error: error.message,
+      stack: error.stack,
+    });
     res.render('reportes', {
       activePage: 'reportes',
       message: 'Error al cargar el reporte',
@@ -55,13 +61,22 @@ router.get('/complaint-state-history', async (req, res) => {
         query: req.query,
       });
       await emitReportVisited(req);
-      logger.info('Evento report-visited emitido correctamente (historial)', { ip: req.ip, path: req.path });
+      logger.info('Evento report-visited emitido correctamente (historial)', {
+        ip: req.ip,
+        path: req.path,
+      });
     } catch (err) {
-      logger.error('Error emitiendo evento report-visited (historial)', { error: err.message, stack: err.stack });
+      logger.error('Error emitiendo evento report-visited (historial)', {
+        error: err.message,
+        stack: err.stack,
+      });
     }
     return res.status(200).json(report);
   } catch (error) {
-    logger.error('Error al obtener el reporte de historial de estados de quejas:', { error: error.message, stack: error.stack });
+    logger.error(
+      'Error al obtener el reporte de historial de estados de quejas:',
+      { error: error.message, stack: error.stack }
+    );
     return res.status(500).json({
       error: 'Error al obtener el reporte de historial de estados de quejas',
     });
