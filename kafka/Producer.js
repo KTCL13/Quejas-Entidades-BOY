@@ -1,7 +1,6 @@
 const { kafkajs } = require('./config');
 const EVENTS = require('../constants/events');
 const logger = require('../uttils/logger');
-const { Json } = require('sequelize/lib/utils');
 
 const producer = kafkajs.producer();
 
