@@ -58,7 +58,7 @@ exports.changeComplaintStateController = async (req, res, next) => {
     const complaint = await getComplaintById(complaintId);
     const changedBy = req.header('x-useremail');
     await changeComplaintState(complaintId, newState);
-    await emitComplaintStateChanged(
+    emitComplaintStateChanged(
       complaint.id,
       complaint.description,
       complaint.Entity.name,
