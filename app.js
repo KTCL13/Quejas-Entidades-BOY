@@ -3,7 +3,8 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+var morganLogger = require('morgan');
+var logger = require('./uttils/logger');
 
 var index = require('./routes/index');
 var complaintsRouter = require('./routes/complaints');
@@ -17,7 +18,7 @@ var app = express();
 app.set('views', path.join(__dirname, './views'));
 app.set('view engine', 'pug');
 
-app.use(logger('dev'));
+app.use(morganLogger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -50,6 +51,12 @@ app.use(function (err, req, res) {
   const isApi = req.originalUrl && req.originalUrl.startsWith('/api');
   const wantsJson = req.accepts && req.accepts('json') === 'json';
 
+  logger.error(`Error ${err.status || 500}: ${err.message}`, {
+    url: req.originalUrl,
+    method: req.method,
+    stack: err.stack,
+  });
+
   if (isApi || wantsJson) {
     return res.json({
       message: err.message,
@@ -65,10 +72,10 @@ app.use(function (err, req, res) {
     },
     function (renderErr, html) {
       if (renderErr) {
-        console.error(
-          'No se pudo renderizar la vista de error:',
-          renderErr.message
-        );
+        logger.error('No se pudo renderizar la vista de error', {
+          error: renderErr.message,
+          originalError: err.message,
+        });
         return res.send(`<h1>Error</h1><pre>${err.message}</pre>`);
       }
       res.send(html);
