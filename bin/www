@@ -30,13 +30,21 @@ async function startServer() {
     await sequelize.authenticate();
     console.log('Conexión a la base de datos establecida con éxito.');
 
-    // 2. Si la conexión es exitosa, inicia el servidor
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);
+
     if (process.env.NODE_ENV !== 'test') {
-      await createTopics();
-      await connectProducer();
+      try {
+        await createTopics();
+        await connectProducer();
+        console.log('Kafka conectado exitosamente.');
+      } catch (kafkaError) {
+        console.warn(
+          'Advertencia: No se pudo conectar a Kafka. La app funcionará sin eventos.',
+          kafkaError.message
+        );
+      }
     }
   } catch (error) {
     console.error('No se pudo conectar a la base de datos:', error);
