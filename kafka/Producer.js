@@ -1,12 +1,14 @@
 const { kafkajs } = require('./config');
 const EVENTS = require('../constants/events');
-const e = require('express');
+const logger = require('../uttils/logger');
+const { Json } = require('sequelize/lib/utils');
 
 const producer = kafkajs.producer();
 
 const connectProducer = async () => await producer.connect();
 
 const emitReportVisited = async (req) => {
+  logger.info(`Emitiendo evento ReportVisited ${req.method} ${req.path}`);
   const eventData = {
     timestamp: new Date().toISOString(),
     ipAddress: req.ip,
@@ -23,6 +25,9 @@ const emitReportVisited = async (req) => {
       },
     ],
   });
+  logger.info(
+    `Evento emitido con exito ReportVisited ${req.method} ${req.path}`
+  );
 };
 
 const emitComplaintStateChanged = async (
@@ -42,6 +47,9 @@ const emitComplaintStateChanged = async (
     changedBy,
     timestamp: new Date().toISOString(),
   };
+  logger.info(
+    'Emitiendo evento ComplaintStateChanged' + JSON.stringify(eventData)
+  );
 
   await producer.send({
     topic: EVENTS.COMPLAINT_STATE_CHANGED,
@@ -53,6 +61,8 @@ const emitComplaintStateChanged = async (
       },
     ],
   });
+
+  logger.info('Evento ComplaintStateChanged emitido con éxito');
 };
 
 async function disconnectProducer() {
