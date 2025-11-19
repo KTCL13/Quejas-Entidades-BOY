@@ -4,19 +4,34 @@ const { getComplaintReportByEntity } = require('../services/quejas.service');
 const { emitReportVisited } = require('../kafka/Producer');
 const axios = require('axios');
 require('dotenv').config();
+const logger = require('../uttils/logger');
 
 // GET /api/reports
 router.get('/', async (req, res) => {
   try {
+    logger.info('Visita a reportes', {
+      ip: req.ip,
+      method: req.method,
+      path: req.path,
+      timestamp: new Date().toISOString(),
+    });
     const report = await getComplaintReportByEntity();
     res.render('reportes', {
       activePage: 'reportes',
       message: null,
       report,
     });
-    emitReportVisited(req);
+    try {
+      await emitReportVisited(req);
+      logger.info('Evento report-visited emitido correctamente', {
+        ip: req.ip,
+        path: req.path,
+      });
+    } catch (err) {
+      logger.error('Error emitiendo evento report-visited', { error: err.message, stack: err.stack });
+    }
   } catch (error) {
-    console.error('Error al cargar reporte de quejas:', error);
+    logger.error('Error al cargar reporte de quejas:', { error: error.message, stack: error.stack });
     res.render('reportes', {
       activePage: 'reportes',
       message: 'Error al cargar el reporte',
@@ -32,14 +47,21 @@ router.get('/complaint-state-history', async (req, res) => {
     );
     const report = response.data;
 
-    emitReportVisited(req);
-
+    try {
+      logger.info('Visita a reportes (historial) - emitiendo evento', {
+        ip: req.ip,
+        method: req.method,
+        path: req.path,
+        query: req.query,
+      });
+      await emitReportVisited(req);
+      logger.info('Evento report-visited emitido correctamente (historial)', { ip: req.ip, path: req.path });
+    } catch (err) {
+      logger.error('Error emitiendo evento report-visited (historial)', { error: err.message, stack: err.stack });
+    }
     return res.status(200).json(report);
   } catch (error) {
-    console.error(
-      'Error al obtener el reporte de historial de estados de quejas:',
-      error
-    );
+    logger.error('Error al obtener el reporte de historial de estados de quejas:', { error: error.message, stack: error.stack });
     return res.status(500).json({
       error: 'Error al obtener el reporte de historial de estados de quejas',
     });
