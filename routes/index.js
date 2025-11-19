@@ -66,4 +66,11 @@ router.get('/complaints-by-entity', async (req, res) => {
   }
 });
 
+router.get('/complaints-history', async (req, res) => {
+  res.render('complaintHistory', {
+    activePage: 'historial',
+    history: [],
+  });
+});
+
 module.exports = router;
