@@ -4,6 +4,7 @@ var router = express.Router();
 var { getEntitiesCache } = require('../config/cache');
 var { getComplaintById } = require('../services/quejas.service');
 const { getComplaintReportByEntity } = require('../services/quejas.service');
+const { emitReportVisited } = require('../kafka/Producer');
 
 // Listado de quejas
 
@@ -56,6 +57,8 @@ router.get('/complaints-by-entity', async (req, res) => {
       message: null,
       report,
     });
+
+    emitReportVisited(req);
   } catch (error) {
     console.error('Error al cargar reporte de quejas:', error);
     res.render('reportes', {
