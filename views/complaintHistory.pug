@@ -1,0 +1,35 @@
+extends layout
+
+block content
+  .container-fluid.py-4
+    .row.mb-4
+      .col-lg-12
+        h2.mb-3 Historial de Cambios de Quejas
+
+    // Tabla de cambios
+    .card.shadow-sm
+      .card-body
+        .table-responsive
+          table.table.table-hover.table-striped.table-sm
+            thead.table-light
+              tr
+                th ID Queja
+                th Queja Realizada A
+                th Nuevo Estado
+                th Último Estado
+                th Cambio Realizado Por
+                th Fecha y Hora
+                th Acciones
+
+            tbody#tableBody
+              tr
+                td(colspan='7').text-center
+                  .spinner-border.spinner-border-sm(role='status')
+                  span.ms-2 Cargando...
+
+        // Paginación
+        nav.mt-4#paginationContainer(style='display: none;')
+          ul.pagination.justify-content-center#paginationList
+
+    // Script externo
+    script(src='/js/complaintHistory.js')

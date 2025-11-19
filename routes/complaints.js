@@ -1,11 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { getEntitiesCache } = require('../config/cache');
-const {
-  getComplaintReportByEntity,
-  getComplaintStates,
-} = require('../services/quejas.service');
+const { getComplaintStates } = require('../services/quejas.service');
 const { param, body, header, query } = require('express-validator');
 const {
   validateRequest,
@@ -18,16 +14,6 @@ const {
   deleteComplaintController,
   changeComplaintStateController,
 } = require('../controllers/complaintsController');
-
-// GET /registrar → renderiza el formulario con entidades
-router.get('/registrar', async (req, res) => {
-  try {
-    const entidades = getEntitiesCache() || [];
-    res.render('registrar', { entidades, activePage: 'registrar' });
-  } catch {
-    res.render('registrar', { entidades: [], activePage: 'registrar' });
-  }
-});
 
 // POST /api/complaints → crea una nueva queja
 router.post(
